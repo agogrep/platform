@@ -1,5 +1,7 @@
 bases/*
+!bases/.gitkeep
 logs/*
+!logs/.gitkeep
 RAM/*
-
+!RAM/.gitkeep
 
