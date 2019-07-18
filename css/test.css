@@ -1,0 +1,10 @@
+.ui-menu-item-wrapper {
+  border: 1px solid red;
+  height:25px;
+}
+.ui-menu-item-wrapper p{
+  float: right;
+  cursor: pointer;
+  height:30px;
+  width: 30px;
+}

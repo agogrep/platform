@@ -1,0 +1,42 @@
+.fbox{
+  display: inline-flex;
+}
+.fbox input{
+  display: inline-block;
+  width: 200px;
+}
+
+#list_box .linkrow{
+  color: blue;
+}
+#list_box .linkrow p{
+  display: inline-block;
+  margin: 3px;
+}
+
+
+#list_box .linkrow:hover{
+  cursor: pointer;
+}
+
+#list_box .linkrow .name:hover{
+  text-decoration: underline;
+}
+
+.waiting-indicator{
+  width: 100% !important;
+  height: 100% !important;
+  cursor: wait !important;
+}
+.waiting-indicator *{
+  cursor: wait !important;
+}
+
+
+#box{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%)
+}

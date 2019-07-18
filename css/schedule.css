@@ -1,0 +1,159 @@
+.schedulebox .listbox{
+  /*border: 1px solid var(--e1_col);
+  width: 230px;
+  height: auto;*/
+}
+
+.schedulebox .listbox .value-box div,
+.schedulebox  #tableday.month td  div{
+  float: left;
+  vertical-align: middle;
+}
+.schedulebox .listbox .value-box input::before,
+.schedulebox #tableday.month td input::before{
+  font-size: 10px;
+}
+
+
+.schedulebox .listbox .value-box .inscription,
+.schedulebox #tableday.month td .inscription{
+  /*padding: 2px;*/
+  color: var(--f3_col);
+  /*margin: 0 0 0 3px;*/
+  margin: 1px 3px 1px 6px;
+  color:  inherit;
+  text-align: center;
+  min-width: 20px;
+}
+
+.schedulebox .cbox-input input {
+    margin-left: 5px;
+}
+
+
+.schedulebox .listbox .value-box .cbox-input,
+.schedulebox #tableday.month td .cbox-input{
+  margin: -2px;
+}
+
+.schedulebox .listbox div.ec-row-selected,
+.schedulebox #tableday.month td.ec-row-selected{
+  background:var(--e1_col);
+  color:#fff;
+}
+.schedulebox .listbox .value-box,
+.schedulebox #tableday.month td{
+  border: 1px solid var(--e1_col);
+  /*border-radius: 6px;*/
+  /*height: 20px;*/
+  /*background: #f0f0f0;*/
+  /*width: 60px;*/
+  display: inline-flex;
+  margin: 2px;
+  cursor: default;
+  min-width: 37px;
+
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+
+.schedulebox  label{
+  margin: 3px -6px 1px 2px;
+}
+
+
+.schedulebox #choicemode label,
+.schedulebox #choicemode input,
+.schedulebox #days div{
+  float: left;
+}
+
+.schedulebox #choicemode label{
+  /* margin: 3px -3px 0 10px; */
+  margin-top: 7px;
+}
+.schedulebox .datetimebox{
+  width: 80px;
+  text-align: center;
+  /*margin: 0 6px 0 -4px;*/
+  margin: 1px 0 0 0;
+}
+
+#generator{
+  max-width: 380px;
+  padding: 5px;
+}
+
+/*.schedulebox #schedule{
+  padding: 5px;
+}*/
+.schedulebox .period div {
+    float: left;
+    margin: 0 0 2px 0;
+}
+
+.schedulebox tr:nth-child(1) td{
+  text-align: center;
+}
+
+.schedulebox #bt-generete{
+  float: right;
+  margin: 2px 0 0 0;
+}
+textarea[name='schedule']{
+  display: none;
+}
+
+#choicemode {
+  /*padding-bottom: 4px;*/
+}
+#choicemode input[type="radio"]{
+  margin-top: 3px;
+}
+#events p.link{
+  height: 20px;
+  padding-left: 7px;
+  padding-bottom: 1px;
+  padding-top: 3px;
+}
+
+.schedulebox #days{
+/*   border: 1px solid; */
+  width: 224px;
+  height: 200px;
+/*   float: right */
+   float:left;
+
+}
+
+.schedulebox #tableday.week{
+  margin-left: 20px;
+}
+
+.schedulebox #choicemode{
+  /* margin-left: 16px; */
+}
+
+.schedulebox #listyears{
+  margin-top: 5px;
+  height: 30px;
+  overflow-y: scroll;
+}
+
+.schedulebox  #months{
+ width: 100px;
+ float:left;
+ margin-top: 4px;
+}
+.schedulebox  #months label{
+  margin-bottom: 6px;
+}
+
+.schedulebox  #schedule{
+  margin-top: 10px;
+  margin-left: 28px;
+}

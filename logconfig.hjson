@@ -1,0 +1,69 @@
+{
+        version: 1,
+        formatters: {
+            simple: {
+                format: "{lineno} {module} {funcName} {message}",
+                style: "{",
+            },
+            detailed:{
+                format:"{levelname} {asctime} {module} {funcName} {lineno} {process}/{thread} {message} " ,
+                style: "{",
+            },
+            message:{
+                format:"#{asctime} #{message}",
+                style: "{",
+            }
+
+        },
+        handlers: {
+            console: {
+                class: "logging.StreamHandler",
+                formatter: "simple",
+                level: "INFO",
+            },
+            main: {
+
+                class: "logging.handlers.RotatingFileHandler",
+                filename: "<[MAINLOG]>/main.log",
+                formatter: "detailed",
+                mode: "a",
+                maxBytes: <[5*1024*1024]>,
+                backupCount: 5,
+            },
+
+            #register: {
+            #    class: "logging.handlers.RotatingFileHandler",
+            #    filename:"<[path]>",
+            #    mode: "a",
+            #    formatter: "message",
+            #    maxBytes: <[5*1024*1024]>,
+            #    backupCount: 5,
+            #},
+            # errors: {
+            #     class: "logging.FileHandler",
+            #     filename: "",
+            #     mode: "w",
+            #     level: "ERROR",
+            #     formatter: "detailed",
+            # },
+
+        },
+        loggers: {
+
+            main: {
+                handlers: ["main"]
+            },
+
+            #register: {
+            #    handlers: ["register"]
+            #}
+
+        },
+        root: {
+            level: "DEBUG",
+            handlers: [
+                    "console",
+                    # "errors"
+            ]
+        },
+    }

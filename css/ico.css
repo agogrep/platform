@@ -1,0 +1,25 @@
+[class*=ico_sprite]:hover{
+  fill: white;
+  color: white;
+}
+
+[class*=ico_sprite] {
+  width: 25px;
+  padding: 1px;
+  height: 25px;
+  float: right;
+  margin-top: 2px;
+  margin-right: 2px;
+  cursor: pointer;
+}
+
+.ico_sprite_refresh svg{
+  width: 80%;
+  height: 80%;
+  margin: 15%;
+}
+.ico_sprite_option svg{
+  width: 115%;
+  height: 115%;
+  margin: -5%;
+}

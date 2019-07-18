@@ -1,0 +1,146 @@
+/** 									{ margin: 0; padding: 0; }*/
+/*body								{ font: 14px Helvetica, Sans-Serif; }*/
+/*#page-wrap							{ width: 800px; margin: 25px auto; }*/
+
+.dropdown .dropdelim{
+  height: 2px;
+  background: var(--e1_col);
+  padding: 0;
+}
+.dropdown li{
+  display: block;
+}
+
+
+
+.dropdown a	{
+  text-decoration: none;
+  cursor: default;
+  background: var(--a6_col);
+  color: var(--a3_col);
+  height: 100%;
+}
+
+.dropdown a:hover,
+.dropdown .sub_menu .hover a{
+  color:  inherit;
+  /*border-bottom:  1px solid grey;*/
+  background: #fff;
+}
+
+
+.dropdown, 	.dropdown	ul
+  { list-style: none;
+  }
+
+
+
+
+/*.dropdown,*/
+/*.dropdown .sub_menu*/
+.dropdown ul{
+  z-index: 1000;
+  box-shadow: 0 1px 3px #ccc;
+}
+/*p                                   { margin: 15px 0; }*/
+
+/*
+	LEVEL ONE
+*/
+ul.dropdown                         { position: relative; }
+ul.dropdown li {
+  /*font-weight: bold;*/
+  float: left;
+  zoom: 1;
+  background: var(--a6_col);
+  cursor: default;
+}
+ul.dropdown > li{
+  color: var(--a3_col);
+  margin: 2px;
+  margin-top: 2px;
+  padding: 5px;
+  border: 1px solid var(--e2_col);
+  margin-top: 6px;
+}
+
+
+ul.dropdown li div {
+  display: block;
+  padding: 4px 8px;
+  /*border-right:*/
+  background: var(--a6_col);
+}
+ul.dropdown .link{
+  background: var(--a6_col);
+  color: var(--a3_col);
+  overflow-x: hidden;
+}
+ul.dropdown .link:hover{
+  background: var(--a4_col);
+  color: #fff;
+}
+
+ul.dropdown li:last-child div
+  {
+    border-right: none;
+  } /* Doesn't work in IE */
+ul.dropdown li.hover,
+ul.dropdown li:hover{
+  background: #fff;
+  /*color: black;*/
+  color: #3F3F3F;
+  position: relative;
+}
+/*ul.dropdown li.hover a { color: black; }*/
+
+
+/*
+	LEVEL TWO
+*/
+ul.dropdown ul 						{
+  width: 220px;
+  visibility: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+ul.dropdown ul li 					{
+  font-weight: normal;
+  /*background: #f6f6f6;*/
+  /*color: #000;*/
+	/*border-bottom: 1px solid #ccc;*/
+  float: none; }
+
+                                    /* IE 6 & 7 Needs Inline Block */
+ul.dropdown ul li a					{
+  border-right: none;
+  width: 97%;
+  display: inline-block;
+  padding: 4px 0 4px 6px;
+}
+
+/*
+	LEVEL THREE
+*/
+ul.dropdown ul ul{
+  top: 0;
+}
+
+
+ul.dropdown ul ul{
+  /*visibility: hidden;*/
+  /*left: 98%;*/
+}
+/*ul.dropdown ul ul:last-child {
+  right: 98%;
+}*/
+
+ul.dropdown li:hover > ul {
+  visibility: visible;
+}
+
+
+ul.dropdown p:first-letter{
+	 /* text-transform: uppercase; */
+}

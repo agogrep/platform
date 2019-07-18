@@ -1,0 +1,81 @@
+:root{
+
+  --int-el: #B5B5FF;  /* #C9C9FF;interactive element все активные елементы управления*/
+  --move-el: #C9C9FF; /* #9999FF */
+  --int-border: #8787BE; /*#9C9CFF*/
+  --sec-int-el: #9C9C9C; /*second  вторичные   */
+  --text-int: #3232A4;
+  --mut-el:#D5D5D5; /* muted все неактивние елементы управления*/
+  --mut-link-background:#f0f0f0;
+  --mut-border: #9C9C9C;
+  --main-line: #9C9C9C; /*все основные линии окон и некоторых елементов*/
+  --war-border:#FFAC8B; /*передупреждение*/
+  --war-background:#FFD1BF;
+  --deleted-el: bisque;
+  --stat-txt-done:#90A42C;
+  --stat-txt-err: #A44E2C;
+  --act-link-text:#3F3F3F;
+
+  --dark-background: #A7A7A7;
+}
+
+
+:root{
+  --a1_col:#97B5FF; /*#9C9CFF*/
+  --a2_col:#8495BE; /*#8787BE   --int-border */
+  --a3_col:#3051A4; /*#3232A4   --text-int */
+  --a4_col:#B1C7FF; /*#B5B5FF   --int-el element все активные елементы управления*/
+  --a5_col:#C6D6FF; /*#C9C9FF   --move-el */
+  --a6_col:#f0f0f0;
+
+  --b1_col:#FDFF8B; /*#EBFF8B  */
+  --b2_col:#BDBE7E; /*#B3BE7E */
+  --b3_col:#A3A42C; /*#90A42C   --stat-txt-done */
+  --b4_col:#FEFFA8; /*#F0FFA8 */
+  --b5_col:#FEFFBF; /*#F4FFBF */
+
+  --c1_col:#FF8E8B; /*#FFAC8B   --war-border передупреждение*/
+  --c2_col:#BE7F7E; /*#BE907E */
+  --c3_col:#A42F2C; /*#A44E2C   --stat-txt-err */
+  --c4_col:#FFAAA8; /*#FFC1A8 */
+  --c5_col:#FFC1BF; /*#FFD1BF   --war-background */
+
+  --c6_col: bisque;   /*-deleted-el */
+
+
+  --e1_col: #9C9C9C;   /*    --sec-int-el, --mut-border, --main-line вторичные,все основные линии окон и некоторых елементов */
+  --e2_col: #A7A7A7;   /*   --dark-background: */
+  --e3_col: #D5D5D5;    /*  --mut-el все неактивние елементы управления*/
+  --e4_col: #f0f0f0;    /*  --mut-link-background */
+
+  --f3_col: #3F3F3F; /*--act-link-text */
+
+
+}
+
+
+/*
+оттенок 249
+--a1_col: #7A8DFF;
+--a2_col: #6C73A1;
+--a3_col: #525fad;
+--a4_col: #B0BBFF;
+--a5_col: #b0bbffb5;
+--a6_col: #f0f0f0;
+--b1_col: #FDFF8B;
+--b2_col: #BDBE7E;
+--b3_col: #A3A42C;
+--b4_col: #FEFFA8;
+--b5_col: #FEFFBF;
+--c1_col: #FF8E8B;
+--c2_col: #BE7F7E;
+--c3_col: #A42F2C;
+--c4_col: #FFAAA8;
+--c5_col: #FFC1BF;
+--c6_col: bisque;
+--e1_col: #9C9C9C;
+--e2_col: #A7A7A7;
+--e3_col: #D5D5D5;
+--e4_col: #f0f0f0;
+--f3_col: #3F3F3F;
+*/

@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="/file/css/main.css">
+    <script src="/file/js/jquery-3.2.1.js"></script>
+    <meta charset="utf-8">
+
+
+  </head>
+  <body style = "width:380px;height:240px">
+    <p>Добро пожаловать в AgogOS!</p>
+    <p>Эта система предназначена для интерактивной работы с базами данных. <a href = "/page/about_system.html" >Подробнее о системе...</a></p>
+    <p>Вы автоматически зарегистрированы  как <span class = "current-user"></span></p>
+    <p>Язык выбран в соответствии с Вашими локальными настройками. <button class = "link" onclick='window.parent.$("#lnk_main_set").click()'>Изменить язык</button></p><br />
+  <script>
+    var name = window.parent.$("#login_name").text();
+    $('.current-user').text(name);
+</script>
+  </script>
+
+  </body>
+</html>

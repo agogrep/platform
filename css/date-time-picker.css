@@ -1,0 +1,306 @@
+.cmp-date-time-picker{
+  width:210px;
+  padding:4px;
+  margin:0;
+  background-color:#fff;
+  border:1px solid #ccc;
+  border-radius:2px;
+  -webkit-box-shadow:0 1px 3px #ccc;
+  box-shadow:0 1px 3px #ccc;
+  -webkit-box-sizing:content-box;
+  box-sizing:content-box;
+  font-size:12px;
+  position:absolute;
+  z-index:9999;
+  display:none;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none
+  }
+  .cmp-date-time-picker *{
+    -webkit-box-sizing:content-box;
+    box-sizing:content-box;
+
+    margin:0;
+    padding:0;
+    font-style:normal
+    }
+  .cmp-date-time-picker .cmp-dp-ctrl-wrap{
+    width:210px;
+    height:26px;
+    overflow:hidden
+  }
+  .cmp-date-time-picker .cmp-dp-ctrl-group{
+    height:26px;
+    line-height:26px;
+    float:left;
+    margin:0 2px
+  }
+  .cmp-date-time-picker .cmp-dp-ctrl-group .cmp-dp-btn{
+    width:22px;
+    height:26px;
+    overflow:hidden;
+    float:left;
+    cursor:pointer;
+    position:relative
+  }
+  .cmp-date-time-picker .cmp-dp-ctrl-group .cmp-dp-txt{
+    width:57px;
+    height:26px;
+    text-align:center;
+    overflow:hidden;
+    float:left
+  }
+  .cmp-date-time-picker .cmp-dp-ctrl-group .cmp-dp-triangle{
+    display:block;
+    width:0;
+    height:0;
+    position:absolute;
+    left:50%;
+    top:50%;
+    margin:-4px 0 0 -2px}
+  .cmp-date-time-picker .cmp-dp-ctrl-group .cmp-dp-btn-prev .cmp-dp-triangle{
+    border-top:4px solid transparent;
+    border-bottom:4px solid transparent;
+    border-left:0 solid transparent;
+    border-right:5px solid #333
+  }
+  .cmp-date-time-picker .cmp-dp-ctrl-group .cmp-dp-btn-next .cmp-dp-triangle{
+    border-top:4px solid transparent;
+    border-bottom:4px solid transparent;
+    border-left:5px solid #333;
+    border-right:0 solid transparent
+  }
+  .cmp-date-time-picker .cmp-dp-ctrl-group-month{
+    width:91px
+  }
+  .cmp-date-time-picker .cmp-dp-ctrl-group-month .cmp-dp-txt{
+    width:47px;
+    cursor:pointer
+  }
+  .cmp-date-time-picker .cmp-dp-ctrl-group-year{
+    width:111px
+  }
+  .cmp-date-time-picker .cmp-dp-ctrl-group-year .cmp-dp-txt{
+    width:67px
+  }
+  .cmp-date-time-picker .cmp-dp-day-name{
+    width:210px;
+    /*width: 17em;*/
+    height:30px;
+    line-height:30px;
+    overflow:hidden;
+  }
+  .cmp-date-time-picker .cmp-dp-day-name .cmp-dp-day-item{
+    width:30px;
+    /*width: 2.4em;*/
+    text-align:center;
+    font-weight:700;
+    color:#999;
+    float:left
+  }
+  .cmp-date-time-picker .cmp-dp-date-wrapper{
+    width:210px;
+    line-height:26px;
+    overflow:hidden
+  }
+  .cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item{
+    width: 26px;
+    height: 26px;
+    margin: 0 2px 4px;
+    text-align: center;
+    color: var(--a3_col);
+    float: left;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-size: 10px;
+    -webkit-box-sizing:border-box;
+    box-sizing:border-box;
+
+    /*width: 2em;
+    height: 2em;
+    margin: 0 0.1em 0.3em;
+    text-align: center;
+    color: var(--a3_col);
+    float: left;
+    cursor: pointer;
+    border: 0.1em solid white;*/
+
+    /*border-radius:3px*/
+  }
+  .cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item:hover{
+    border: 1px solid var(--e1_col);
+    /*color: white;*/
+    /*background-color:#C9C9FF;*/
+
+    /*font-weight: 700;*/
+}
+  .cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item-today,.cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item-today:hover{
+    background-color:#a4a4a4;
+    color:#fff
+}
+  .cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item-other{
+    background-color:#f0f0f0
+}
+  .cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item-cur,.cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item-cur:hover{
+    background-color: var(--a4_col);
+    color:#fff
+}
+.cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item-disabled,.cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item-disabled:hover{
+  background-color:#f9f9f9;
+  color:#e1e1e1;
+  font-weight:400;
+  cursor:default
+}
+.cmp-date-time-picker .cmp-dp-btn-wrap{
+  width:210px;
+  height:26px;
+  padding-top:5px;
+  *padding-top:10px;
+  padding-bottom:4px;
+  text-align:center;
+  overflow:hidden
+}
+.cmp-date-time-picker .cmp-dp-btn-wrap .cmp-dp-btn{
+  display: inline-block;
+  padding: 0 8px;
+  margin: 0 4px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  /*color: #fff;*/
+  background: var(--a4_col);
+  border: 1px solid var(--a4_col);
+  /*border-radius: 4px;*/
+  cursor: pointer;
+}
+.cmp-date-time-picker .cmp-dp-btn-wrap .cmp-dp-btn:hover{
+  color: white;
+}
+.cmp-date-time-picker .cmp-dp-btn-wrap .cmp-dp-btn-disabled{
+  color:#f6f6f6;
+  background:#cecece;
+  border:1px solid #cecece
+  }
+  .cmp-date-time-picker .cmp-dp-time-group{
+    width:105px;
+    height:26px;
+    float:left;
+    overflow:hidden;
+    vertical-align:top;
+    font-size:12px;
+    color:#999
+    }
+    .cmp-date-time-picker .cmp-dp-time-group input{
+      width: 20px;
+      height: 16px;
+      line-height: 16px;
+      padding: 4px 0;
+      *margin-top: -1px;
+      text-align: center;
+      outline: 0;
+      vertical-align: middle;
+      border: 1px solid var(--e1_col);
+    }
+    .cmp-date-time-picker .cmp-dp-time-group input:hover{
+      border: 1px solid  black;
+    }
+    .cmp-date-time-picker .cmp-dp-btn-group{
+      width:105px;
+      height:26px;
+      float:left;
+      overflow:hidden;
+      font-size:0
+    }
+    .cmp-date-time-picker .cmp-dp-month-menu{
+      width:150px;
+      padding:4px;
+      background-color:#fff;
+      border:1px solid #ccc;
+      border-radius:2px;
+      -webkit-box-shadow:0 1px 3px #ccc;
+      box-shadow:0 1px 3px #ccc;
+      position:absolute;
+      top:30px;
+      right:10px;
+      display:none
+    }
+    .cmp-date-time-picker .cmp-dp-month-item{
+      width: 48px;
+      height: 24px;
+      line-height: 26px;
+      text-align: center;
+      overflow: hidden;
+      /*border-radius: 3px;*/
+      float: left;
+      border: 1px solid white;
+      color: var(--a3_col);
+      cursor: pointer;
+    }
+    .cmp-date-time-picker .cmp-dp-month-item:hover{
+      border: 1px solid var(--e1_col);
+    }
+    .cmp-date-time-picker .cmp-dp-time-menu{
+      width:180px;
+      padding:4px;
+      background-color:#fff;
+      border:1px solid #ccc;
+      border-radius:2px;
+      -webkit-box-shadow:0 1px 3px #ccc;
+      box-shadow:0 1px 3px #ccc;
+      position:absolute;
+      bottom:37px;
+      display:none
+    }
+    .cmp-date-time-picker .cmp-dp-time-item{
+      width: 24px;
+      line-height: 24px;
+      margin: 0 2px;
+      text-align: center;
+      color: var(--a3_col);
+      float: left;
+      cursor: pointer;
+      border-radius: 3px;
+      border: 1px solid white;
+    }
+    .cmp-date-time-picker .cmp-dp-time-item:hover{
+      /*background-color: #eee;*/
+      border: 1px solid var(--e1_col);
+    }
+    .cmp-date-time-picker .cmp-dp-hour-menu{
+      left:4px
+    }
+    .cmp-date-time-picker .cmp-dp-minute-menu{
+      width:120px;
+      left:36px
+    }
+    .cmp-date-time-picker .cmp-dp-second-menu{
+      width:120px;
+      left:68px
+    }
+
+
+.cmp-date-time-picker .cmp-dp-date-wrapper .cmp-dp-date-item:nth-child(7n+1){
+  color:#A44E2C;
+}
+.cmp-date-time-picker .cmp-dp-day-name .cmp-dp-day-item:nth-child(7n+1){
+  color:#BE907E;
+}
+
+
+.J-dtp-year-txt textarea{
+  resize: none;
+  border: 0;
+  text-align: center;
+  width: inherit;
+  height: inherit;
+  font: inherit;
+}
+.J-dtp-year-txt textarea:active, .J-dtp-year-txt textarea:focus {
+  outline: none !important;
+}
+.J-dtp-year-txt textarea::-moz-focus-inner {
+  border: 0 !important;
+}

@@ -1,0 +1,40 @@
+sudo apt install apache2
+sudo apt install libapache2-mod-wsgi-py3
+sudo chmod -R 777 /var/www
+sudo sh -c "echo  '<VirtualHost *:80>\n    ServerName agogos\n    DocumentRoot /var/www/agogos/\n   wsgiscriptalias / /var/www/agogos/index.wsgi\n</VirtualHost>' > /etc/apache2/sites-available/agogos.conf"
+sudo a2dissite 000-default.conf
+sudo a2ensite agogos.conf
+
+sudo mount -t tmpfs -o size=100M tmpfs /var/www/agogos/RAM/
+sudo sh -c "echo '\ntmpfs /var/www/agogos/RAM/ tmpfs nodev,nosuid,noexec,size=100M 0 0' >> /etc/fstab"
+
+
+sudo apt-get install software-properties-common
+sudo add-apt-repository -y ppa:ondrej/mysql-5.5
+sudo apt-get update
+sudo apt-get install mysql-server
+
+
+
+sudo apt install -y python3-pip
+sudo apt-get install python-dev libxml2 libxml2-dev libxslt-dev
+
+
+sudo pip3 install mysql-connector-python
+sudo pip3 install hjson 
+sudo pip3 install flock 
+sudo pip3 install python-crontab 
+sudo pip3 install pathlib
+
+
+sudo pip3 install lxml
+
+sudo sh -c "echo '\numask 002' >> /etc/apache2/envvars"
+sudo sh -c "echo  '\n\n%www-data ALL = NOPASSWD: /etc/init.d/apache2 \n%www-data ALL = NOPASSWD: /sbin/shutdown \n%www-data ALL = NOPASSWD: /bin/chmod' >> /etc/sudoers"
+
+
+
+--------------------------
+sudo nano /etc/mysql/my.conf
+    [mysqld] 
+    sql_mode = ''
