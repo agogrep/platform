@@ -8,11 +8,11 @@ def modulTest():
     print('===== start index test =======')
     import sys
 
-
-#    envirList = [ 
+###
+#    envirList = [
 #      '/usr/local/lib/python3.4/site-packages',
-#      '/usr/local/lib/python3.4/lib-dynload', 
-#      '/usr/local/lib/python3.4/plat-linux', 
+#      '/usr/local/lib/python3.4/lib-dynload',
+#      '/usr/local/lib/python3.4/plat-linux',
 #      '/usr/local/lib/python3.4',
 #      '/usr/local/lib/python34.zip'
 #      ]
@@ -21,7 +21,7 @@ def modulTest():
 #    for en in envirList:
 #      sys.path.insert(0,en)
     print(sys.path)
-    
+
     from lxml import etree
     print('===== lxml import etree =======')
 
@@ -30,18 +30,18 @@ def modulTest():
 
     from crontab import CronSlices, CronTab
     print('===== crontab =======')
-    
-    
-    
+
+
+
     import inspect, os.path
     import sys, traceback
-    
-    
-    
-    
+
+
+
+
     import pathlib, importlib
     print('===== pathlib, importlib =======')
-    
+
     import hashlib
     print('===== hashlib =======')
     import ctypes, os
@@ -61,7 +61,7 @@ def modulTest():
     import json
     import ast
     #import sys
-    
+
     print("============= end test ==========")
 
 
@@ -75,38 +75,38 @@ def main(environ, startResponse):
     print('python version',sys.version)
     print('python path ',sys.executable)
     print('mod_wsgi.version',str(environ['mod_wsgi.version']))
-    
-    
+
+
     method = environ.get('REQUEST_METHOD')
     print('REQUEST_METHOD',environ.get('REQUEST_METHOD'))
     print('HTTP_COOKIE',environ.get('HTTP_COOKIE'))
-    
-    
-    
+
+
+
     print('CONTENT_TYPE',environ.get('CONTENT_TYPE'))
-   
+
     #print('CONTENT_TYPE','ERROR')
-   
-    
+
+
     #print('environ.keys ',environ.keys())
     #print('environ.items ',environ.items())
-    
+
     #print('environ.fromkeys ',environ.fromkeys())
-    
-    
+
+
     print('PATH_INFO',environ.get('PATH_INFO'))
     print('REMOTE_ADDR',environ.get('REMOTE_ADDR'))
     print('HTTP_USER_AGENT',environ.get('HTTP_USER_AGENT'))
     print('DATA',environ['wsgi.input'].read() if method == "POST"  else environ.get('QUERY_STRING'))
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     modulTest()
-  
+
     listTextType = 'text/html'
     out = b'HELLO'
     responseHeaders = [
