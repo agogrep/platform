@@ -2,7 +2,7 @@
 
 // ==== функции общего назначения ==========================
 
-var debugMode = false;
+var debugMode = true;
 
 jQuery.cookie = function(name, value, options) {
     /*
@@ -677,7 +677,7 @@ var serviceData = {
       }else{
         return false;
       }
-      
+
       if(debugMode){console.log(data);}
     },
     load:function(part='all') {
