@@ -415,7 +415,7 @@ def filterByLinkedTables(nameTable,links):
 
     outSql = outSql + ') '+nameTable
 
-    #print('outSql',outSql)
+    print('outSql',outSql)
     return outSql
 
 
