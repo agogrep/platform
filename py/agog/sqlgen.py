@@ -418,8 +418,51 @@ def filterByLinkedTables(nameTable,links):
     print('outSql',outSql)
     return outSql
 
+def testfilterByLinkedTables(nameTable,links):
+    '''
+        links :
+            <table>.<field> [ = / <> / < , > ,@ ] <var>  [ && / || ]...
+    '''
+    tables = agog.db.ConformDataBase().get('tables')
 
 
+    inDictLinks = {
+        nameTable :{}
+    }
+
+    listInLinks = links.split(' && ')
+    operList = ['=','@','like','in','<>','<','>']
+
+    #acControl = agog.serverman.AccessControl()
+
+    for el in listInLinks:
+        elDict = {}
+        for op in operList:
+            if (' '+ op +' ') in el:
+                elList = el.split(op)
+                elDict[op] = elList[1].split(',')
+                obj = elList[0].strip().split('.')
+                if len(obj)==1:
+                    fieldName = obj[0]
+                    table = nameTable
+                elif len(obj)==2:
+                    fieldName = obj[1]
+                    table = obj[0]
+
+                if table not in inDictLinks:
+                    inDictLinks[table] = {}
+
+
+
+                # if acControl.check('fields',table+'_list.journal',fieldName,uid,'r'):
+                #
+                #     if fieldName in inDictLinks[table]:
+                #         if op in inDictLinks[table][fieldName]:
+                #             inDictLinks[table][fieldName][op].extend(elDict[op])
+                #         else:
+                #             inDictLinks[table][fieldName].update(elDict)
+                #     else:
+                #         inDictLinks[table][fieldName] = elDict
 
 if __name__ == '__main__':
     pass

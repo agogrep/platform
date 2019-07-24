@@ -4,5 +4,3 @@ logs/*
 !logs/.gitkeep
 RAM/*
 !RAM/.gitkeep
-
-/test
