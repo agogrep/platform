@@ -3,6 +3,7 @@ import sys, traceback
 import pathlib
 import logging
 import pprint
+import re
 
 agog  = sys.modules[__package__]
 
@@ -253,58 +254,175 @@ def write(**arg):
 
 
 
+# def old_filterByLinkedTables(nameTable,links):
+#     '''filter by linked tables'''
+#
+#     # print('filterByLinkedTables',links)
+#
+#
+#     tables = agog.db.ConformDataBase().get('tables')
+#     fields = agog.db.ConformDataBase().get('fields')
+#     primarykey = tables[nameTable]['primarykey']
+#     dictLinks = tables[nameTable]['links']
+#     session = agog.db.Session().currentSession()
+#     uid = session.get('uid')
+#     inDictLinks = {
+#         nameTable :{}
+#     }
+#
+#     listInLinks = links.split(' && ')
+#     operList = ['=','<>','<','>']
+#
+#     acControl = agog.serverman.AccessControl()
+#
+#     for el in listInLinks:
+#         elDict = {}
+#         for op in operList:
+#             if (' '+ op +' ') in el:
+#                 elList = el.split(op)
+#                 elDict[op] = elList[1].split(',')
+#                 obj = elList[0].strip().split('.')
+#                 if len(obj)==1:
+#                     fieldName = obj[0]
+#                     table = nameTable
+#                 elif len(obj)==2:
+#                     fieldName = obj[1]
+#                     table = obj[0]
+#
+#                 if table not in inDictLinks:
+#                     inDictLinks[table] = {}
+#
+#
+#
+#                 if acControl.check('fields',table+'_list.journal',fieldName,uid,'r'):
+#
+#                     if fieldName in inDictLinks[table]:
+#                         if op in inDictLinks[table][fieldName]:
+#                             inDictLinks[table][fieldName][op].extend(elDict[op])
+#                         else:
+#                             inDictLinks[table][fieldName].update(elDict)
+#                     else:
+#                         inDictLinks[table][fieldName] = elDict
+#
+#     intersect = set.intersection(set(inDictLinks),set(dictLinks))
+#
+#
+#     def changeVal_(field,inVal):
+#         val = agog.tools.converter(inVal,fields[field]['type'],fields[field]['default'])
+#         if fields[field]['type'] in ('str','datetime'):
+#             return '"{0}"'.format(val)
+#         else:
+#             return val
+#
+#
+#     def convertToIn_(dictVal,nameField):
+#         val = '('
+#         i = 1
+#         for el in dictVal:
+#
+#             val = val + ' {0}'.format(changeVal_(nameField,el.strip()))
+#             if i < len(dictVal):
+#                 val = val + ','
+#             i = i + 1
+#         val = val + ')'
+#         return val
+#
+#
+#     def constructorWhere_(table,field,oper,data,currentWhere,logicalOperation='AND'):
+#         outWhere = currentWhere
+#         realOper = oper
+#         if oper == '=':
+#             if (len(data)>1):
+#                 realOper = 'IN'
+#                 val = convertToIn_(data,field)
+#             else:
+#                 val = ' {0}'.format(changeVal_(field,data[0].strip()))
+#             if outWhere.strip() != 'WHERE':
+#                 outWhere = outWhere + ' {0}'.format(logicalOperation)
+#             outWhere = outWhere + ' {0}.{1} {2} {3}'.format(table,field,realOper,val)
+#         else:
+#             for el in data:
+#                 val = ' {0}'.format(changeVal_(field,data[0].strip()))
+#                 if outWhere.strip() != 'WHERE':
+#                     outWhere = outWhere + ' {0}'.format(logicalOperation)
+#                 outWhere = outWhere + ' {0}.{1} {2} {3}'.format(table,field,realOper,val)
+#
+#         return outWhere
+#
+#
+#
+#     startPartExceptSQL = ''' {idname} NOT IN
+#                         (Select DISTINCT {table}.{idname} From {table} {table}'''.format(**{
+#                                             'table': nameTable,
+#                                             'idname': primarykey
+#                                             })
+#     wehereExceptSQL = ' WHERE'
+#     wehereSQL = ' WHERE'
+#     partExceptSQL = ''
+#     partSQL = ''
+#     mode = '' # ex - Except , us = Usual
+#
+#
+#     for table in inDictLinks:
+#         mode = ''
+#         for field in inDictLinks[table]:
+#             for oper in inDictLinks[table][field]:
+#                 data = inDictLinks[table][field][oper]
+#                 if table in dictLinks:
+#                     mode = 'us'
+#                     if (oper == '<>'):
+#                         mode = 'ex'
+#                         wehereExceptSQL = constructorWhere_(dictLinks[table]['transTable'],field,'=',data,wehereExceptSQL,'OR')
+#                     else:
+#                         wehereSQL = constructorWhere_(dictLinks[table]['transTable'],field,oper,data,wehereSQL)
+#                 else:
+#                     wehereSQL = constructorWhere_(table,field,oper,data,wehereSQL)
+#
+#         if mode == "us":
+#             partSQL = partSQL + ''' INNER JOIN {transTable} {transTable} USING({idname})'''.format(**{
+#             'transTable':dictLinks[table]['transTable'],
+#             'idname':primarykey
+#             })
+#
+#
+#         elif mode == 'ex':
+#             partExceptSQL = partExceptSQL +''' Left OUTER join {transTable} {transTable}
+#                         USING({idname})'''.format(**{
+#                         'transTable':dictLinks[table]['transTable'],
+#                         'idname':primarykey
+#                         })
+#
+#     mainFields = ''
+#     for field in tables[nameTable]['fields']:
+#         if mainFields !='':
+#             mainFields += ', '
+#         mainFields += nameTable + '.' + field
+#
+#     outSql = '(SELECT DISTINCT {mainFields} FROM {nameTable} {nameTable}'.format(nameTable = nameTable,mainFields = mainFields)
+#
+#     if partSQL:
+#         outSql = outSql + partSQL
+#
+#     if wehereSQL.strip() != 'WHERE':
+#         outSql = outSql + wehereSQL
+#
+#     if partExceptSQL:
+#         partWhere = ''
+#         if wehereSQL.strip() != 'WHERE':
+#             partWhere = ' AND'
+#         else:
+#             partWhere = ' WHERE'
+#         outSql = outSql + partWhere + startPartExceptSQL +partExceptSQL+ wehereExceptSQL +')'
+#
+#     outSql = outSql + ') '+nameTable
+#
+#     print('outSql',outSql)
+#     return outSql
+
 def filterByLinkedTables(nameTable,links):
-    '''filter by linked tables'''
-
-    # print('filterByLinkedTables',links)
-
-
+    ## подключение внешних источников
     tables = agog.db.ConformDataBase().get('tables')
     fields = agog.db.ConformDataBase().get('fields')
-    primarykey = tables[nameTable]['primarykey']
-    dictLinks = tables[nameTable]['links']
-    session = agog.db.Session().currentSession()
-    uid = session.get('uid')
-    inDictLinks = {
-        nameTable :{}
-    }
-
-    listInLinks = links.split(' && ')
-    operList = ['=','<>','<','>']
-
-    acControl = agog.serverman.AccessControl()
-
-    for el in listInLinks:
-        elDict = {}
-        for op in operList:
-            if (' '+ op +' ') in el:
-                elList = el.split(op)
-                elDict[op] = elList[1].split(',')
-                obj = elList[0].strip().split('.')
-                if len(obj)==1:
-                    fieldName = obj[0]
-                    table = nameTable
-                elif len(obj)==2:
-                    fieldName = obj[1]
-                    table = obj[0]
-
-                if table not in inDictLinks:
-                    inDictLinks[table] = {}
-
-
-
-                if acControl.check('fields',table+'_list.journal',fieldName,uid,'r'):
-
-                    if fieldName in inDictLinks[table]:
-                        if op in inDictLinks[table][fieldName]:
-                            inDictLinks[table][fieldName][op].extend(elDict[op])
-                        else:
-                            inDictLinks[table][fieldName].update(elDict)
-                    else:
-                        inDictLinks[table][fieldName] = elDict
-
-    intersect = set.intersection(set(inDictLinks),set(dictLinks))
-
 
     def changeVal_(field,inVal):
         val = agog.tools.converter(inVal,fields[field]['type'],fields[field]['default'])
@@ -312,157 +430,186 @@ def filterByLinkedTables(nameTable,links):
             return '"{0}"'.format(val)
         else:
             return val
+        return inVal
 
-
-    def convertToIn_(dictVal,nameField):
-        val = '('
-        i = 1
-        for el in dictVal:
-
-            val = val + ' {0}'.format(changeVal_(nameField,el.strip()))
-            if i < len(dictVal):
-                val = val + ','
-            i = i + 1
-        val = val + ')'
-        return val
-
-
-    def constructorWhere_(table,field,oper,data,currentWhere,logicalOperation='AND'):
-        outWhere = currentWhere
-        realOper = oper
-        if oper == '=':
-            if (len(data)>1):
-                realOper = 'IN'
-                val = convertToIn_(data,field)
-            else:
-                val = ' {0}'.format(changeVal_(field,data[0].strip()))
-            if outWhere.strip() != 'WHERE':
-                outWhere = outWhere + ' {0}'.format(logicalOperation)
-            outWhere = outWhere + ' {0}.{1} {2} {3}'.format(table,field,realOper,val)
-        else:
-            for el in data:
-                val = ' {0}'.format(changeVal_(field,data[0].strip()))
-                if outWhere.strip() != 'WHERE':
-                    outWhere = outWhere + ' {0}'.format(logicalOperation)
-                outWhere = outWhere + ' {0}.{1} {2} {3}'.format(table,field,realOper,val)
-
-        return outWhere
+    # ===================================
+    # подготовка шаблонов для поиска выражений
+    operators = [r'<>',r'=',r'>',r'<',r'like']
+    # searchPatt = r''
+    operPatt = r''
+    for i, op in enumerate(operators):
+        if i>0:
+            # searchPatt = searchPatt + r'|'
+            operPatt = operPatt + r'|'
+        # searchPatt = searchPatt + r'\S+\s+{0}.+[^&\|]'.format(op)
+        operPatt = operPatt + r'{0}'.format(op)
 
 
 
-    startPartExceptSQL = ''' {idname} NOT IN
-                        (Select DISTINCT {table}.{idname} From {table} {table}'''.format(**{
-                                            'table': nameTable,
-                                            'idname': primarykey
-                                            })
-    wehereExceptSQL = ' WHERE'
-    wehereSQL = ' WHERE'
-    partExceptSQL = ''
-    partSQL = ''
-    mode = '' # ex - Except , us = Usual
+    mainFilter = re.sub(r'[""'']','',links)
 
+    is_deleted = ""# r'\w+.is_deleted\s+\S\s+\S' регулярка для поиска is_deleted
 
-    for table in inDictLinks:
-        mode = ''
-        for field in inDictLinks[table]:
-            for oper in inDictLinks[table][field]:
-                data = inDictLinks[table][field][oper]
-                if table in dictLinks:
-                    mode = 'us'
-                    if (oper == '<>'):
-                        mode = 'ex'
-                        wehereExceptSQL = constructorWhere_(dictLinks[table]['transTable'],field,'=',data,wehereExceptSQL,'OR')
-                    else:
-                        wehereSQL = constructorWhere_(dictLinks[table]['transTable'],field,oper,data,wehereSQL)
+    relShellPartSql = '(SELECT DISTINCT {field} FROM {innerTable} {where}) {table}'
+    relInnerPartSql = 'INNER JOIN {0} '
+    linkShellPartSQL = '(SELECT DISTINCT {mainTable}.{field} FROM {mainTable} {inner}) {mainTable}'
+    linkExceptPartSQL = '(SELECT DISTINCT {mainTable}.{field} FROM {mainTable} {inner} USING({field}))'
+    linkInnerPartSQL = 'INNER JOIN (SELECT DISTINCT {table}.{field} FROM {table} INNER JOIN {innerTable} USING({inId}) {where}) {table} {USING} '
+
+    decompLinks = [] # decomposed Links
+    for indX, el in enumerate( re.split(r'&&|\|\|', re.sub(r'[()]','',mainFilter) ) ):
+        # print('======= el ==== ',el)
+
+        # print('indX',indX)
+
+        oper = re.findall(operPatt,el)
+        sp = el.split(oper[0])
+
+        leftPart = sp[0].strip()
+        if len(leftPart.split('.')) == 1:
+            leftPart = nameTable +'.'+leftPart
+
+        usedField = leftPart.split('.')[-1]
+        decEL = { # decomposed element
+            'original': el,
+            'num':indX,
+            'oper':oper[0].strip(),
+            'left':leftPart,
+            'right': changeVal_(usedField, sp[1].strip() ),
+            'inner':'',
+            'where':'',
+        }
+
+        routeList = decEL['left'].split('@')
+        routeList.reverse()
+        sqlSTACK = ''
+        lastTable = ''
+
+        for indY, routEl in enumerate(routeList):
+            mainTabDotField = routeList[ indY +1] if len(routeList) > indY +1 else nameTable
+            mainTabDotFieldList = mainTabDotField.split('.')
+            mainTab = mainTabDotFieldList[0]
+            mainField = mainTabDotFieldList[1] if len(mainTabDotFieldList) > 1 else tables[mainTab]['primarykey']
+            tabDotField = routEl.split('.')
+            currTab = tabDotField[0]
+            currField = tabDotField[1] if len(tabDotField) > 1 else tables[currTab]['primarykey']
+
+            # print('indY',indY)
+            # print('main',mainTab, mainField)
+            # print('curr',currTab,currField)
+
+            if mainTab == currTab:
+                print('root')
+                if indY == 0:
+                    where = '{0} {1} {2}'.format( decEL['left'], decEL['oper'] ,decEL['right'])
+                    decEL['where'] = where
+                    decEL['inner'] = ''
                 else:
-                    wehereSQL = constructorWhere_(table,field,oper,data,wehereSQL)
+                    if decEL['oper'] == '<>':
+                        decEL['inner'] = ''
+                        decEL['where'] = '{0}.{1} NOT IN {2}'.format( currTab ,currField, re.sub(r'\b\w+$','',sqlSTACK) )
+                    else:
+                        field = tables[lastTable]['primarykey']
+                        where = '{0}.{1} = {2}.{3}'.format( lastTable + str(indX) ,field ,currTab , currField)
+                        sqlSTACK = 'INNER JOIN {0} '.format( sqlSTACK.strip() + str(indX))
+                        decEL['inner'] = sqlSTACK
+                        decEL['where'] = where
+            elif tables[mainTab]['relations'].get(mainField) == currTab:
 
-        if mode == "us":
-            partSQL = partSQL + ''' INNER JOIN {transTable} {transTable} USING({idname})'''.format(**{
-            'transTable':dictLinks[table]['transTable'],
-            'idname':primarykey
-            })
+                # print('relations')
 
+                param = {
+                    'table': currTab,
+                    'field': tables[currTab]['primarykey'],
+                    'where':''
+                }
+                if indY == 0:
+                    oper = decEL['oper'] if decEL['oper'] != '<>' else '='
+                    param['where'] = "WHERE {0} {1} {2}".format(currField,  oper, decEL['right'])
+                    param['innerTable'] =  currTab
+                else:
+                    param['innerTable'] = sqlSTACK
+                if currTab != lastTable:
+                    sqlSTACK = relShellPartSql.format(**param)
+                lastTable = param.get('table')
 
-        elif mode == 'ex':
-            partExceptSQL = partExceptSQL +''' Left OUTER join {transTable} {transTable}
-                        USING({idname})'''.format(**{
-                        'transTable':dictLinks[table]['transTable'],
-                        'idname':primarykey
+            elif currTab in tables[mainTab]['links']:
+
+                # print('links' )
+
+                transTable = tables[mainTab]['links'][currTab]['transTable']
+                param = {
+                'table':transTable,
+                'field': tables[mainTab]['primarykey'],
+                'inId': tables[currTab]['primarykey'],
+                'where': '',
+                'USING':''
+                }
+                if indY==0:
+                    param['innerTable'] = currTab
+                    oper = decEL['oper'] if decEL['oper'] != '<>' else '='
+                    param['where'] = "WHERE {0} {1} {2}".format(currTab+'.'+currField, oper , decEL['right'])
+                elif (indY > 0): #and (i != len(routeList)-1):
+                    param['innerTable'] = sqlSTACK
+
+                if (indY != len(routeList)-1):
+                    param['USING'] = 'USING({0})'.format(tables[mainTab]['primarykey'])
+                    sqlSTACK = linkShellPartSQL.format(**{
+                    'field' : tables[mainTab]['primarykey'],
+                    'mainTable': mainTab,
+                    'inner': linkInnerPartSQL.format(**param),
+                    })
+                else:
+                    if decEL['oper'] == '<>':
+                        leftWhere = linkExceptPartSQL.format(**{
+                        'field' : tables[mainTab]['primarykey'],
+                        'mainTable': mainTab,
+                        'inner': linkInnerPartSQL.format(**param),
                         })
+                        decEL['inner'] = ''
+                        decEL['where'] = '{0}.{1} NOT IN {2}'.format( mainTab ,mainField, leftWhere )
+                    else:
+                        decEL['inner'] = linkInnerPartSQL.format(**param).strip() + str(indX)
+                        relationField = tables[mainTab]['primarykey']
+                        decEL['where'] = '{0}.{1} = {2}.{3}'.format( transTable + str(indX) ,relationField ,mainTab ,relationField)
 
+                lastTable = param.get('table')
+
+        decompLinks.append(decEL)
+    # print(decompLinks)
+
+    # =========================================
+    # сборка
     mainFields = ''
     for field in tables[nameTable]['fields']:
         if mainFields !='':
             mainFields += ', '
         mainFields += nameTable + '.' + field
 
-    outSql = '(SELECT DISTINCT {mainFields} FROM {nameTable} {nameTable}'.format(nameTable = nameTable,mainFields = mainFields)
+    outSql = '(SELECT DISTINCT {mainFields} FROM {nameTable} {nameTable} {outInner} {outWhere}) {nameTable}'
 
-    if partSQL:
-        outSql = outSql + partSQL
+    outInner = ''
+    outWhere = ''
+    for decEL in decompLinks:
+        if decEL['inner']:
+            outInner = outInner + " " + decEL['inner']
+        if decEL['where']:
+            mainFilter = mainFilter.replace( decEL['original'], decEL['where'] )
 
-    if wehereSQL.strip() != 'WHERE':
-        outSql = outSql + wehereSQL
+    if mainFilter:
+        outWhere = 'WHERE {0}'.format(mainFilter)
+        outWhere = outWhere.replace('&&',' AND ').replace('||',' OR ')
 
-    if partExceptSQL:
-        partWhere = ''
-        if wehereSQL.strip() != 'WHERE':
-            partWhere = ' AND'
-        else:
-            partWhere = ' WHERE'
-        outSql = outSql + partWhere + startPartExceptSQL +partExceptSQL+ wehereExceptSQL +')'
+    outSql = outSql.format(**{
+        'mainFields': mainFields,
+        'nameTable' : nameTable,
+        'outInner' : outInner,
+        'outWhere': outWhere
+    })
 
-    outSql = outSql + ') '+nameTable
-
-    print('outSql',outSql)
+    # print(outSql)
     return outSql
 
-def testfilterByLinkedTables(nameTable,links):
-    '''
-        links :
-            <table>.<field> [ = / <> / < , > ,@ ] <var>  [ && / || ]...
-    '''
-    tables = agog.db.ConformDataBase().get('tables')
-
-
-    inDictLinks = {
-        nameTable :{}
-    }
-
-    listInLinks = links.split(' && ')
-    operList = ['=','@','like','in','<>','<','>']
-
-    #acControl = agog.serverman.AccessControl()
-
-    for el in listInLinks:
-        elDict = {}
-        for op in operList:
-            if (' '+ op +' ') in el:
-                elList = el.split(op)
-                elDict[op] = elList[1].split(',')
-                obj = elList[0].strip().split('.')
-                if len(obj)==1:
-                    fieldName = obj[0]
-                    table = nameTable
-                elif len(obj)==2:
-                    fieldName = obj[1]
-                    table = obj[0]
-
-                if table not in inDictLinks:
-                    inDictLinks[table] = {}
-
-
-
-                # if acControl.check('fields',table+'_list.journal',fieldName,uid,'r'):
-                #
-                #     if fieldName in inDictLinks[table]:
-                #         if op in inDictLinks[table][fieldName]:
-                #             inDictLinks[table][fieldName][op].extend(elDict[op])
-                #         else:
-                #             inDictLinks[table][fieldName].update(elDict)
-                #     else:
-                #         inDictLinks[table][fieldName] = elDict
 
 if __name__ == '__main__':
     pass
