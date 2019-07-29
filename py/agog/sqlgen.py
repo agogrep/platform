@@ -432,6 +432,27 @@ def filterByLinkedTables(nameTable,links):
             return val
         return inVal
 
+    def optimizer(links):
+        # убирает из года /* */ и сокращает && и ||
+        def delOrAnd(inp):
+            out = inp
+            stack =re.findall(r'[&\|\s+]+',out) # пустые условия
+            for val in stack:
+                if val.strip():
+                    subOper = ' && '
+                    hasOR = re.findall(r'\|\|',val)
+                    if len(hasOR):
+                        subOper = ' || '
+                    out = out.replace(val,subOper)
+            return out
+        out = re.sub(r'(/\*).+?(\*/)','',links) # удаление неактивных условий
+        out = delOrAnd(out)
+        out = re.sub(r'\([&\|\s+]+' , ' ( ' ,out) #
+        out = re.sub(r'[&\|\s+]+\)' , ' ) ' ,out) #
+        out = re.sub(r'\(\s*\)','',out) # пустые скобки
+        out = delOrAnd(out)
+        out = re.sub(r'^(&&|\|\|)|(&&|\|\|)$','',out.strip()) # концевые условия
+        return out
     # ===================================
     # подготовка шаблонов для поиска выражений
     operators = [r'<>',r'=',r'>',r'<',r'like']
@@ -447,6 +468,8 @@ def filterByLinkedTables(nameTable,links):
 
 
     mainFilter = re.sub(r'[""'']','',links)
+    mainFilter = optimizer(mainFilter)
+
 
     is_deleted = ""# r'\w+.is_deleted\s+\S\s+\S' регулярка для поиска is_deleted
 
@@ -457,7 +480,16 @@ def filterByLinkedTables(nameTable,links):
     linkInnerPartSQL = 'INNER JOIN (SELECT DISTINCT {table}.{field} FROM {table} INNER JOIN {innerTable} USING({inId}) {where}) {table} {USING} '
 
     decompLinks = [] # decomposed Links
-    for indX, el in enumerate( re.split(r'&&|\|\|', re.sub(r'[()]','',mainFilter) ) ):
+
+
+
+    def delEmpty(itm):
+        return True if itm else False
+
+    withoutBrackets = re.sub(r'[()]','',mainFilter.strip())
+    dividedByOperator = filter(delEmpty,re.split(r'&&|\|\|', withoutBrackets))
+
+    for indX, el in enumerate( dividedByOperator ):
         # print('======= el ==== ',el)
 
         # print('indX',indX)

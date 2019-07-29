@@ -256,4 +256,35 @@ def filterByLinkedTables(nameTable,links):
 
 #accounts    users.login <> admin
 # print(filterByLinkedTables('transactions','transactions.dest@accounts.aname <> d_purse'))
-print(filterByLinkedTables('accounts','users.login = admin'))
+# print(filterByLinkedTables('accounts','users.login = admin'))
+
+
+
+def optimizer(links):
+    # убирает из года /* */ и сокращает && и ||
+
+    def delOrAnd(inp):
+        out = inp
+        stack =re.findall(r'[&\|\s+]+',out) # пустые условия
+        for val in stack:
+            if val.strip():
+                subOper = ' && '
+                hasOR = re.findall(r'\|\|',val)
+                if len(hasOR):
+                    subOper = ' || '
+                out = out.replace(val,subOper)
+        return out
+
+
+
+    out = re.sub(r'(/\*).+?(\*/)','',links) # удаление неактивных условий
+    out = delOrAnd(out)
+    out = re.sub(r'\([&\|\s+]+' , ' ( ' ,out) #
+    out = re.sub(r'[&\|\s+]+\)' , ' ) ' ,out) #
+    out = re.sub(r'\(\s*\)','',out) # пустые скобки
+    out = delOrAnd(out)
+    out = re.sub(r'^(&&|\|\|)|(&&|\|\|)$','',out.strip()) # концевые условия
+    return out
+
+
+print(optimizer( '/*accounts.is_deleted = 0*/' ))

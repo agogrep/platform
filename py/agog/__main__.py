@@ -55,6 +55,9 @@ elif _line == 'currentEvents':
 #
 agog.serverman.iniVar()
 
+links = 'accounts.is_deleted = 0 '
+
+print(agog.sqlgen.filterByLinkedTables('accounts',links))
 
 # print(agog.serverman.AccessControl().check('fields','users_form.cassa','curr',1,'r'))
 
@@ -349,24 +352,24 @@ agog.serverman.iniVar()
 #     }
 #
 #
-param = {
-    'client': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0',
-    'path': '/file/html/welcome_page.html',
-    'method': 'GET',
-    # 'data': json.dumps(data).encode('utf-8'),
-    'data':'',
-    'cookie': 'buh=0e1f07935ffc1a5ba9f45923e0c9306a; ml=ru',
-    'type': 'application/json',
-    'ip': '127.0.0.1',
-    'queue': '1559983221157977'
-    }
-#
-#
-#
-#
-#
-w = agog.serverman.Web(param)
-print(w.do())
+# param = {
+#     'client': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0',
+#     'path': '/file/html/welcome_page.html',
+#     'method': 'GET',
+#     # 'data': json.dumps(data).encode('utf-8'),
+#     'data':'',
+#     'cookie': 'buh=0e1f07935ffc1a5ba9f45923e0c9306a; ml=ru',
+#     'type': 'application/json',
+#     'ip': '127.0.0.1',
+#     'queue': '1559983221157977'
+#     }
+# #
+# #
+# #
+# #
+# #
+# w = agog.serverman.Web(param)
+# print(w.do())
 
 
 # ==================== TaskMan =================
