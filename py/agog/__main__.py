@@ -55,9 +55,9 @@ elif _line == 'currentEvents':
 #
 agog.serverman.iniVar()
 
-links = 'accounts.is_deleted = 0 '
+links = '( transactions.source@accounts.aid = 1 || transactions.dest@accounts.aid = 1 )  && transactions.is_deleted = 0'
 
-print(agog.sqlgen.filterByLinkedTables('accounts',links))
+print(agog.sqlgen.filterByLinkedTables('transactions',links))
 
 # print(agog.serverman.AccessControl().check('fields','users_form.cassa','curr',1,'r'))
 

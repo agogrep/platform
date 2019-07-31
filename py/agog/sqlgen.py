@@ -455,7 +455,7 @@ def filterByLinkedTables(nameTable,links):
         return out
     # ===================================
     # подготовка шаблонов для поиска выражений
-    operators = [r'<>',r'=',r'>',r'<',r'like']
+    operators = [r'<>',r'=',r'>',r'<',r'LIKE']
     # searchPatt = r''
     operPatt = r''
     for i, op in enumerate(operators):
@@ -489,6 +489,8 @@ def filterByLinkedTables(nameTable,links):
     withoutBrackets = re.sub(r'[()]','',mainFilter.strip())
     dividedByOperator = filter(delEmpty,re.split(r'&&|\|\|', withoutBrackets))
 
+    # print('dividedByOperator',re.split(r'&&|\|\|', withoutBrackets))
+
     for indX, el in enumerate( dividedByOperator ):
         # print('======= el ==== ',el)
 
@@ -503,7 +505,7 @@ def filterByLinkedTables(nameTable,links):
 
         usedField = leftPart.split('.')[-1]
         decEL = { # decomposed element
-            'original': el,
+            'original': el.strip(),
             'num':indX,
             'oper':oper[0].strip(),
             'left':leftPart,
@@ -531,7 +533,7 @@ def filterByLinkedTables(nameTable,links):
             # print('curr',currTab,currField)
 
             if mainTab == currTab:
-                print('root')
+                # print('root')
                 if indY == 0:
                     where = '{0} {1} {2}'.format( decEL['left'], decEL['oper'] ,decEL['right'])
                     decEL['where'] = where
@@ -607,6 +609,7 @@ def filterByLinkedTables(nameTable,links):
 
                 lastTable = param.get('table')
 
+        # print('decEL',decEL)
         decompLinks.append(decEL)
     # print(decompLinks)
 

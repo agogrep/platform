@@ -269,6 +269,14 @@ body{
   display: block;
 }
 
+#filterset .rule .checkbox{
+   float: left;
+   margin-left: 2px;
+   margin-right: 5px;
+   margin-top: 7px;
+}
+
+
 /* ======================================== presetbox ========================== */
 
 

@@ -414,22 +414,27 @@ function getIdFormName(journal) {
       if (this.options.sel_fields) {out.request.sel_fields = this.options.sel_fields;}
       var filterRequest = {};
       var opList = ['order','links','search'];
+      var word = getValElement(this.options._elControl.find('.cp-in-search'));
+
       opList.forEach((el)=>{
+        var newFilter = this.options[el].replace(/\[WORD\]/g,word);
         if (el == 'search') {
           if (this.options._elControl) {
-            var word = getValElement(this.options._elControl.find('.cp-in-search'));
+            // var word = getValElement(this.options._elControl.find('.cp-in-search'));
             if (word) {
-              var ss = this.options['search'].replace(/\[WORD\]/g,word);
-              if (this.options[el]) {filterRequest[el] = ss;}
+              // var ss = this.options['search'].replace(/\[WORD\]/g,word);
+              // if (this.options[el]) {filterRequest[el] = ss;}
+              if (this.options[el]) {filterRequest[el] = newFilter;}
             }
           }
 
         }else if (el == 'order') {
           if (out.request.size) {
-            if (this.options[el]) {filterRequest[el] = this.options[el];}
+            // if (this.options[el]) {filterRequest[el] = this.options[el];}
+            if (this.options[el]) {filterRequest[el] = newFilter;}
           }
         }else{
-          if (this.options[el]) {filterRequest[el] = this.options[el];}
+          if (this.options[el]) {filterRequest[el] = newFilter;}
         }
       });
       if (JSON.stringify(filterRequest)!='{}') {
@@ -1112,6 +1117,7 @@ function getIdFormName(journal) {
           table:'',
           currentPreset: "", // если по умолчанию 0 , то открывает последний   пресет, если 1, то первый
           relationshipElement: null,
+          complexLinks:false,
           _dataList : ['links','order','search','countrows'],
         },
 
@@ -1180,13 +1186,45 @@ function getIdFormName(journal) {
           var scriptOrder = this.element.find('#order').val();
           this.element.find('#filterrules,#sortorder').empty();
           var table = this.options.table;
-          var sctList = scriptLinks.split('&&');
+
+
+          this.options.complexLinks = /[()\|]/.test(scriptLinks);
+
+
+
+
+          if (this.options.complexLinks) {
+            this.element.find('#btn_addrule').addClass('disabled');
+          }else{
+            this.element.find('#btn_addrule').removeClass('disabled');
+          }
+
+
+
+
+
+          // console.log('this.options.complexLinks',this.options.complexLinks);
+          // var sctList = scriptLinks.split('&&');
+          var sctList = scriptLinks.split(/&&|\|\|/);
           sctList.forEach((el,i)=>{
             if (el) {
-              var rule = el.split(/(\s+)/).filter(e => e.trim().length > 0);
-              this.addRule(rule[0],rule[1],rule[2]);
+              var el_ = el.replace(/[()]/,'');
+              var active = /(\/\*).+?(\*\/)/.test(el_) ? false : true; // определяем закомментировано ли правила
+              var oper = /=|<>|<|>|LIKE/.exec(el_);
+              var operReg = new RegExp(oper);
+
+              var rule = el_.replace(/\/\*|\*\//g,'').split(operReg);
+
+              console.log('rule',rule);
+              // var rule = el.split(/(\s+)/).filter(e => e.trim().length > 0);
+              // this.addRule(rule[0],rule[1],rule[2]);
+              this.addRule(rule[0].trim(),oper,rule[1].trim(),el_.trim(),active);
             }
           });
+
+
+
+
           var scrOrdList = scriptOrder.split(',');
           scrOrdList.forEach((el,i)=>{
             if (el) {
@@ -1243,14 +1281,23 @@ function getIdFormName(journal) {
         },
 
         createScriptLinks: function() {
+
+          console.log('createScriptLinks');
           var taLinksEl = this.element.find('#links');//this.element.find('#scripts #links');
-          taLinksEl.val('');
           var script = '';
+
+          if (this.options.complexLinks) {
+            script = taLinksEl.val();
+          }
+
+          // taLinksEl.val('');
+
           var ruleList = this.element.find('#filterrules .rule');
           ruleList.each((i,el)=> {
               var ruleEl = $(el);
               var errList = ruleEl.find('.errorvalue');
               if (!errList.length) {
+                  var origin = ruleEl.data().origin;
                   var field = getValElement(ruleEl.find('.field'));
                   var oper = getValElement(ruleEl.find('.operation'));
                   var fieldName = field.split('.')[1];
@@ -1272,10 +1319,27 @@ function getIdFormName(journal) {
                       break;
                     default:
                   }
+
+
                   if (value) {
-                    var strRule = ' '+field+' '+oper+' '+value
-                    if (script) { script = script+' &&'; };
-                    script = script + strRule;
+
+                    var strRule = ' '+field+' '+oper+' '+value;
+
+                    // console.log('check',(ruleEl.find('.checkbox').checkbox('check')))
+
+                    if (! ruleEl.find('.checkbox').checkbox('check')) {
+                      strRule = '/*'+strRule+'*/';
+                    }
+
+
+
+                    if (this.options.complexLinks) {
+                      script = script.replace(origin,strRule)
+                    }else{
+                      if (script) { script = script+' &&'; };
+                      script = script + strRule;
+                    }
+
                   }
               }
           });
@@ -1324,10 +1388,11 @@ function getIdFormName(journal) {
           }
         },
 
-        addRule: function (inField='',inOper='',inVal='') {
+        addRule: function (inField='',inOper='',inVal='',origin='',active=true) {
           var mode = inField==''? 'writeScr': 'onlyRule';
           var rulesEL = this.element.find('#filterrules');
           var ruleEl = $('<div class = "rule">');
+          ruleEl.data({'origin':origin});
           var table = this.options.table;
           var fieldEL = this.genFeildCombobox(inField);//$('<select class = "combobox field" value="'+inField+'">');
           var fields = serviceData.conformDataBase.tables[table].fields
@@ -1340,6 +1405,20 @@ function getIdFormName(journal) {
             }).text(serviceData.wordTranslate(el)[0]+' ('+el+')');
             fieldEL.append(opt);
           };
+
+          if (inField) {
+            if (fieldEL.find('[value="'+inField+'"]').length == 0) {
+              var opt = $('<option>');
+              var otherName = inField.split('.').slice(-1)[0];
+              opt.attr({
+                'value':inField,
+                'name':inField
+              }).text(serviceData.wordTranslate(otherName)[0]+' ('+inField+')');
+              fieldEL.append(opt);
+            }
+          }
+
+
           var valueEl = $('<div class = "value">');
 
           function setEvChange(rootEl) {
@@ -1363,39 +1442,63 @@ function getIdFormName(journal) {
             valEl.empty();
             var fielf = ruleEl.find('.field');
             var fieldName = fielf.attr('value');
+            fieldName = fieldName.split('@').slice(-1)[0];
+
+            var currTable = table;
+            var tables = serviceData.conformDataBase.tables;
+
+
+
             var fnList = fieldName.split('.');
             var relTable = '';
             var typeObj = '';
             if (fnList.length==1) {
               fieldName = fnList[0];
-              typeObj = fields[ fieldName ].relatedObject;
+              typeObj = tables[ currTable ].fields[ fieldName ].relatedObject;
             }else if (fnList.length==2) {
               fieldName =  fnList[1];
               if (table != fnList[0]) {
-                typeObj = 'links';
                 relTable = fnList[0];
+
+                currTable = fnList[0];
+                // var relName = serviceData.conformDataBase.tables[relTable].primarykey;
+                var relName = tables[ currTable ].primarykey;
+                if (relName == fieldName ) {
+                  typeObj = 'links';
+                }else{
+                  typeObj = tables[ currTable ].fields[ fieldName ].relatedObject;
+                }
               }else {
-                typeObj = fields[ fieldName ].relatedObject;
+                typeObj = tables[ currTable ].fields[ fieldName ].relatedObject;
               }
             }
             if (typeObj) {
-              var obj = serviceData.conformDataBase.tables[table][typeObj];
+              // var obj = serviceData.conformDataBase.tables[table][typeObj];
+              var obj = tables[ currTable ][ typeObj ];
               if (typeObj == 'enumerations' ) {
                   var selectEl  = $('<select class = "combobox" value = "'+inVal+'">');
                   selectEl.attr('data-enumerations',obj[fieldName]);
                   valEl.append(selectEl);
                   selectEl.combobox();
               }else if (typeObj == 'links'  ){
+                // var relName = serviceData.conformDataBase.tables[relTable].primarykey;
+                var relName = tables[ currTable ].primarykey;
+
                 valEl.append( setSelectionbox(relTable) ) ;
-                var relName = serviceData.conformDataBase.tables[relTable].primarykey;
                 valEl.find('[name="'+relName+'"]').text(inVal);
+
               } else if (typeObj == 'relations' ) {
-                relTable = serviceData.conformDataBase.tables[table].relations[fieldName];
+                // relTable = serviceData.conformDataBase.tables[table].relations[fieldName];
+                relTable =   tables[ currTable ].relations[fieldName];
+                // console.log('currTable',currTable,'fieldName',fieldName,'inVal',inVal,'relTable',relTable);
+                var relName = tables[ relTable ].primarykey;
+                // console.log('relName',relName);
                 valEl.append( setSelectionbox(relTable) ) ;
-                valEl.find('[name="'+fieldName+'"]').text(inVal);
+                valEl.find('[name="'+relName+'"]').text(inVal);
               }
             }else{
-              var type = fields[ fieldName ].type;
+              // console.log('fieldName',fieldName);
+              var type =   tables[ currTable ].fields[ fieldName ].type;
               if (type == 'datetime') {
                 valEl.append($('<input class = "datetimebox" value = "'+inVal+'">'));
                 setDatetimebox(ruleEl);
@@ -1404,15 +1507,34 @@ function getIdFormName(journal) {
               }
             }
           }
+
+          var checkBox = $('<div class="checkbox" value="">');
+
           var operEl = $('<select class = "combobox operation" value = "'+inOper+'">'+
                             '<option value = "=">=</option>'+
                             '<option value = "<>"><></option>'+
                             '<option value = ">">></option>'+
                             '<option value = "<"><</option>'+
+                            '<option value = "LIKE">LIKE</option>'+
                           '</select>');
           var butdel = $('<button id = "btn_delete"><svg><use xlink:href="/file/ico/sprite.svg#close"></use></svg></button>');
-          ruleEl.append(fieldEL,operEl,valueEl,butdel);
+          if (this.options.complexLinks) { butdel.addClass('disabled') };
+          ruleEl.append(checkBox,fieldEL,operEl,valueEl,butdel);
           rulesEL.append(ruleEl);
+
+          checkBox.attr('value', active ? 1 : 0 );
+          checkBox.checkbox({
+            useAttrValue: true,
+            // checked: active,
+            click: ()=>{
+              // console.log('checkBox click');
+              this.createScriptLinks();
+            }
+          });
+          //.checkbox('option','checked',true)
+
+
+
           fieldEL.combobox();
           operEl.combobox();
           changeTypeField(ruleEl);
@@ -1421,6 +1543,7 @@ function getIdFormName(journal) {
           }
           setEvChange(valueEl);
           fieldEL.change((event)=>{
+            inVal = '';
             var el = $(event.target);
             changeTypeField(el.closest('.rule'));
             setEvChange(valueEl);
