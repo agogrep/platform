@@ -857,7 +857,7 @@ label {
   border:1px solid var(--e1_col);
   min-height: 26px;
   margin: 2px;
-  /* max-width: 394px; */
+  max-width: 394px;
 }
 
 .deleted{

@@ -232,7 +232,7 @@ String.prototype.hashCode = function() {
         var btApply = $('<button id ="apply" class = "ripple lang">').text( serviceData.wordTranslate('apply')[0] );
         var btDelete = $('<button id ="delete" class = "lang">').text( serviceData.wordTranslate('delete')[0] );
         var btAllowСhange = $('<button id ="allowchange" class = "ripple lang">').text( serviceData.wordTranslate('change')[0]);
-        var prSaveBox = $('<div id = "savebox" title="preset" style = "float:right; margin-right: 6px;">');
+        var prSaveBox = $('<div id = "formsavebox" title="preset" style = "float:right; margin-right: 6px;">');
         this.element.append(delimiter,btOk,btcancel,btApply,btDelete);
         this.element.prepend(prSaveBox,btAllowСhange);
         btAllowСhange.click(()=> { this.allowChange(); });
@@ -241,7 +241,7 @@ String.prototype.hashCode = function() {
 
       iniPreset:function() {
         var thieEl = this.element;
-        this.element.find("#savebox").preset({
+        this.element.find("#formsavebox").preset({
           className: this.options.path.split('/').join(''),
           currentPreset:this.options.preset,
           whenChanges:()=>{
@@ -258,7 +258,7 @@ String.prototype.hashCode = function() {
       },
 
       presetToForm:function() {
-        var data =   this.element.find("#savebox").preset('option','data');
+        var data =   this.element.find("#formsavebox").preset('option','data');
         var contEl = $('<div>');
         contEl.loadСontent(this.options.initialData);
         console.log('initialData',this.options.initialData);
@@ -364,7 +364,7 @@ String.prototype.hashCode = function() {
           selectItemsLinks : selectItemsLinks
         };
         data = JSON.stringify(data);
-        this.element.find("#savebox").preset('option','data',data);
+        this.element.find("#formsavebox").preset('option','data',data);
       },
 
       lockForm:function(status) {
@@ -453,8 +453,11 @@ String.prototype.hashCode = function() {
         var forms = {};
         var thisForm = $(this.element);
         var id_lists = thisForm.find('.form').attrs('id');
+        // console.log('thisForm',thisForm);
+        var mainMode = thisForm.find('#form').is('[hidden]') ? 'delete' : 'write';
         id_lists.push('main');
         id_lists.forEach(function(list_id) {
+            // console.log('list_id',list_id);
             var rows = thisForm.find('.turn').filter('.'+list_id);
             var content_list = [];
             rows.each(function(i,row) {
@@ -467,7 +470,8 @@ String.prototype.hashCode = function() {
               });
               form_content['_line'] = 'write';
               if (rowEl.is('[hidden]')==true){
-                  form_content['_line'] = 'delete';
+                  // console.log('list_id',list_id,'mainMode',mainMode);
+                  form_content['_line'] = (mainMode == 'delete') ? 'write' : 'delete';
                   form_content['is_deleted'] = 1;
               }else{
                   form_content['is_deleted'] = 0;
@@ -539,7 +543,8 @@ String.prototype.hashCode = function() {
           }
           this.getHash(true);
 
-          var saveboxEl =   this.element.find('#savebox');
+          var saveboxEl =   this.element.find('#formsavebox');
+          // console.log('saveboxEl',saveboxEl.find('*'));
           if (saveboxEl.find('*').length) {
             saveboxEl.preset('destroy');
             saveboxEl.empty();

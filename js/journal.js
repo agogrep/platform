@@ -414,7 +414,8 @@ function getIdFormName(journal) {
       if (this.options.sel_fields) {out.request.sel_fields = this.options.sel_fields;}
       var filterRequest = {};
       var opList = ['order','links','search'];
-      var word = getValElement(this.options._elControl.find('.cp-in-search'));
+
+      var word = this.options._elControl ?  getValElement(this.options._elControl.find('.cp-in-search')) : '';
 
       opList.forEach((el)=>{
         var newFilter = this.options[el].replace(/\[WORD\]/g,word);

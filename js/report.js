@@ -11,7 +11,8 @@
         enableAutoUpd:false,
         timeoutAutoUpd:1000*60*2,
         setTA : null, // текущее значение setTimeout
-        whenSend:function() {}
+        whenSend:function() {},
+        whenReceived:function() { },
       },
       _create: function() {
         this.element.addClass('allow-reduction');
@@ -168,7 +169,9 @@
           clearTimeout(thieEl.report('option','timeoutAutoUpd'));
         }
       },
-
+      send:function () {
+        this.options.currReport[complexNameToObject(this.options.reportName).name]('send');
+      },
       openScript: function () {
         var nameScript  ='';
         var sysname = this.element.find('[name="sysname"]').text();
@@ -183,6 +186,7 @@
               relationshipElement: this.element.find('.reportparam'),
               saveBoxEL: this.options.saveBoxEl,
               messageElement: this.options.messageElement,
+              whenReceived:this.options.whenReceived
             });
             var thisEl = this.element;
             this.options.whenSend = function (){
@@ -205,6 +209,10 @@
       _setOption: function( key, value ) {
         $.Widget.prototype._setOption.apply( this, arguments );
         this._super( "_setOption", key, value );
+        try {
+          this.options.currReport[complexNameToObject(this.options.reportName).name]('option',key,value);
+        } catch (e) { }
+
       },
 
       destroy: function() {

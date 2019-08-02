@@ -123,10 +123,12 @@ function getSizeElement(element) {
               }else{
                   thisEl.attr('data-win-ind',href);
                   var currPreset = (eventEl.attr('data-preset')!=undefined) ? eventEl.attr('data-preset') : '';
+
+                  var rowEl = eventEl.closest('.row');
                   thisEl.form({
                     preset: currPreset,
                     href: href,
-                    relationshipElement: eventEl.closest('.row'),
+                    relationshipElement: (rowEl.length > 0) ? rowEl : eventEl,
                     call: function() {
                         thisEl.dialog('open');
                         thisEl.ini();
@@ -650,7 +652,7 @@ function getSizeElement(element) {
           var optEl = $('<option>');
           var data = this.options.dictPeriods[el];
           optEl.attr('value',el).text( serviceData.wordTranslate(data.name)[0] +" "+data.startdate+" "+data.enddate);
-          selectEl.append(optEl); 
+          selectEl.append(optEl);
         }
         this.element.prepend(selectEl);
         selectEl.val(this.options.defaulPeriod).trigger("chosen:updated");

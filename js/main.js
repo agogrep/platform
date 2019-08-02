@@ -491,6 +491,11 @@ function getValElement(el) { // возвращает значение елеме
   var regular = []
   var dataStack = {};
   var callStack = {};
+  var synchMode = true;
+
+  function wait() {
+    synchMode = false;
+  }
 
   function setRegular(order,callback) {
   /*
@@ -538,10 +543,12 @@ function getValElement(el) { // возвращает значение елеме
         path = window.location.pathname;
         pthList = path.split('/');
         rightsPath = '/'+pthList[1]+'/';
-        mxhr.open('POST', rightsPath , true);
+        mxhr.open('POST', rightsPath , synchMode);
         mxhr.setRequestHeader('Content-Type', 'application/json');
         mxhr.send(strParam);
-        mxhr.onreadystatechange = function() {
+        // console.log('mxhr.responseText',mxhr.responseText);
+
+        var whenLoad = ()=>{
             if (mxhr.readyState==4){
               var input;
               var error;
@@ -584,13 +591,68 @@ function getValElement(el) { // возвращает значение елеме
               }
           }
         };
+
+        if (synchMode) {
+          mxhr.onreadystatechange = whenLoad;
+        }else{
+          whenLoad();
+          synchMode = true;
+        }
+
+
+
+      //   mxhr.onreadystatechange = function() {
+      //       if (mxhr.readyState==4){
+      //         var input;
+      //         var error;
+      //         try {
+      //           if ($.trim(mxhr.responseText)) {
+      //             input = JSON.parse(mxhr.responseText);
+		  // if(debugMode){console.log('responseText input',input);}
+      //             for (var num in input) {
+      //               if (num == 'error') {
+      //                 for (var i = 0; i < input[num].length; i++) {
+      //                   console.error(input[num][i].request,'\n',input[num][i].log);
+      //                   info = 'The request was made with errors, see the browser logs >>';
+      //                   $('<div>').html(info).windialog({'typedialog':'error'});
+      //                 }
+      //               }else{
+      //                 calls = currCallStack[num];
+      //                 if (typeof(calls)=='object') {
+      //                   for (var i = 0; i < calls.length; i++) {
+      //                     try {
+      //                       calls[i]( input[num] );
+      //                     } catch (e) {
+      //                       console.error(e);
+      //                     }
+      //                   }
+      //                 }
+      //               }
+      //             }
+      //             }
+      //           }
+      //         catch (err) {
+      //           input = mxhr.responseText;
+      //           error = err;
+      //           console.error(error);
+      //           try {
+      //             $('<div>').html(input).windialog({'typedialog':'error'});
+      //           } catch (e) {}
+      //         }
+      //         finally {
+      //           mxhr.abort();
+      //         }
+      //     }
+      //   };
       }
   window.mxhRequest = set;
   window.Request = {
     setRegular: setRegular,
     set: set,
     sendAll: sendAll,
+    wait:wait
   };
+
 }());
 
 

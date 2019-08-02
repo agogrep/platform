@@ -752,18 +752,18 @@ class Form:
             tar_buffer =  part.findtext('section/parentselector')
 
             if (cel_buffer is not None) and (tar_buffer is not None):
-               
+
 
                 newrRootHtml = htmlroot.findall(tar_buffer)
-                
-               
+
+
                 if len(newrRootHtml) > 0:
                     pattern_parthtml = newrRootHtml[0].findall(cel_buffer)
                 else:
                     pattern_parthtml = []
 
-                
-                
+
+
 
                 if len(pattern_parthtml) > 0:
                     txt_pattern = html.tostring(pattern_parthtml[0], encoding ="unicode", method="html")
@@ -852,9 +852,14 @@ class Form:
                             attr_el = el.findtext('attribute')
                             fild_el = el.findtext('fild')
 
-                            curEl = parthtml.findall(cel_el)[0]
 
-                            if cel_el is not None:
+                            # print('parthtml.findall(cel_el)[0]',cel_el,parthtml.findall(cel_el))
+
+                            curElList = parthtml.findall(cel_el)
+                            if len(curElList):
+                                curEl = curElList[0]
+
+                            if (cel_el is not None) and (len(curElList)):
                                 if (fild_el is not None) and (fild_el!=''):
                                     if fild_el in row:
                                         row_val = row[fild_el]
