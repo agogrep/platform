@@ -76,7 +76,8 @@ function getIdFormName(journal) {
         if (!this.options.CPAttr.masterfield) {this.options.CPAttr.masterfield = attrJour.masterfield};
         if (!this.options.CPAttr.path) { this.options.CPAttr.path = attrJour.path};
         if (this.options.CPAttr.path) {
-          this.options.table = this.options.CPAttr.path.split('/')[1].replace('_list','');
+          // this.options.table = this.options.CPAttr.path.split('/')[1].replace('_list','');
+          this.options.table =   this.options.CPAttr.path.replace(/\//,'').split('_')[0];
         };
 
         // console.log('CPAttr.path',this.options.CPAttr.path);
@@ -536,7 +537,14 @@ function getIdFormName(journal) {
     setColumns:function() {
       row = this.element.find('.row').eq(0);
       var hasData = row.children('div').texts().join('');
+
+      // console.log('row.children',row.children('div[name]'));
+
       var col_list = row.children('div').attrs('name');
+
+      // console.log('table',this.options.table);
+      // console.log('col_list',col_list);
+
       if (!hasData) {// если строка пустая - это технологическая строка
         row.addClass('subrow');
       }
@@ -550,6 +558,9 @@ function getIdFormName(journal) {
       sub_el_list = row.children('div.subfield').attrs('name');
       root = $('<div>').attr('id','titles');
       for (var i = 0; i < col_list.length; i++) {
+
+          // console.log('col_list[i]',col_list[i]);
+
           var colum = $('<div>').attr({
                                       name:col_list[i],
                                       title:serviceData.wordTranslate(col_list[i])[1]
@@ -826,6 +837,7 @@ function getIdFormName(journal) {
         _allJournal:null,
         _selectedList:null,
         _allList:null,
+        useStandardButtons: true,
         choicemode : 'multi', // 'one' 'multi'
         // mainFild : null,
         links: '',
@@ -846,9 +858,9 @@ function getIdFormName(journal) {
             '</ul>'+
             '<div class = "tab" id = "selected"></div>'+
             '<div class = "tab" id = "all"  ></div>'+
-            '<div>'+
-            '<button id = "ok">ok</button>'+
-            '<button id = "cancel" class = "lang" >cancel</button>'+
+            '<div id = "buttonsbox">'+
+            // '<button id = "ok">ok</button>'+
+            // '<button id = "cancel" class = "lang" >cancel</button>'+
             '</div>'+
           '</div>')
           elTabs.translate();
@@ -946,14 +958,30 @@ function getIdFormName(journal) {
                 },
                 heightStyle:'auto',
               });
-              thisEl.find('#ok').click(function() {
-                thisEl.selectItems('result');
-              })
-              thisEl.find('#cancel').click(function() {
 
-                thisEl.selectItems('destroy');
-                thisEl.remove();
-              });
+
+              var buttonsboxEl = thisEl.find('#buttonsbox');
+              if (thisEl.selectItems('option','useStandardButtons')) {
+                var btn_ok = $('<button id = "ok">ok</button>');
+                var btn_cancel = $('<button id = "cancel" class = "lang" >cancel</button>');
+                buttonsboxEl.append(btn_ok,btn_cancel);
+                btn_ok.click(function() {
+                  thisEl.selectItems('result');
+                })
+                btn_cancel.find('#cancel').click(function() {
+
+                  thisEl.selectItems('destroy');
+                  thisEl.remove();
+                });
+              }else{
+
+              }
+
+
+
+
+
+
               elTabs.wintabs('option','active',1);
               // if (choicemode=='one') {
               //     elTabs.wintabs('option','active',1);
@@ -1211,12 +1239,12 @@ function getIdFormName(journal) {
             if (el) {
               var el_ = el.replace(/[()]/,'');
               var active = /(\/\*).+?(\*\/)/.test(el_) ? false : true; // определяем закомментировано ли правила
-              var oper = /=|<>|<|>|LIKE/.exec(el_);
+              var oper = /<=|>=|<>|=|<|>|LIKE/.exec(el_);
               var operReg = new RegExp(oper);
 
               var rule = el_.replace(/\/\*|\*\//g,'').split(operReg);
 
-              console.log('rule',rule);
+              // console.log('rule',rule);
               // var rule = el.split(/(\s+)/).filter(e => e.trim().length > 0);
               // this.addRule(rule[0],rule[1],rule[2]);
               this.addRule(rule[0].trim(),oper,rule[1].trim(),el_.trim(),active);
@@ -1517,6 +1545,8 @@ function getIdFormName(journal) {
                             '<option value = ">">></option>'+
                             '<option value = "<"><</option>'+
                             '<option value = "LIKE">LIKE</option>'+
+                            '<option value = "<="><=</option>'+
+                            '<option value = ">=">>=</option>'+
                           '</select>');
           var butdel = $('<button id = "btn_delete"><svg><use xlink:href="/file/ico/sprite.svg#close"></use></svg></button>');
           if (this.options.complexLinks) { butdel.addClass('disabled') };

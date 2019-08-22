@@ -292,7 +292,7 @@ def filterByLinkedTables(nameTable,links):
         return out
     # ===================================
     # подготовка шаблонов для поиска выражений
-    operators = [r'<>',r'=',r'>',r'<',r'LIKE']
+    operators = [r'>=',r'<=',r'<>',r'=',r'>',r'<',r'LIKE']
     operPatt = r''
     for i, op in enumerate(operators):
         if i>0:
@@ -320,7 +320,7 @@ def filterByLinkedTables(nameTable,links):
     # print('dividedByOperator',re.split(r'&&|\|\|', withoutBrackets))
 
     for indX, el in enumerate( dividedByOperator ):
-        print('indX',indX)
+        # print('indX',indX)
         oper = re.findall(operPatt,el)
         sp = el.split(oper[0])
 
@@ -354,14 +354,14 @@ def filterByLinkedTables(nameTable,links):
             currTab = tabDotField[0]
             currField = tabDotField[1] if len(tabDotField) > 1 else tables[currTab]['primarykey']
 
-            print('indY',indY)
-            print('main',mainTab, mainField)
-            print('curr',currTab,currField)
+            # print('indY',indY)
+            # print('main',mainTab, mainField)
+            # print('curr',currTab,currField)
 
 
 
             if currTab in tables[mainTab]['links']:
-                print('links' )
+                # print('links' )
                 transTable = tables[mainTab]['links'][currTab]['transTable']
                 param = {
                 'table':transTable,
@@ -402,7 +402,7 @@ def filterByLinkedTables(nameTable,links):
             else:
 
                 relShellPartSql = '(SELECT DISTINCT {field} FROM {mainTab} INNER JOIN {innerTable} {where})'
-                print('modern relations')
+                # print('modern relations')
                 if nameTable != currTab:
                     if nameTable == mainTab:
                         if len(routeList)==1:
@@ -448,7 +448,7 @@ def filterByLinkedTables(nameTable,links):
                             })
                             param['innerTable'] =  currTab
                         else:
-                            print('else === currField',currField)
+                            # print('else === currField',currField)
                             param['where'] = "WHERE {mainTab}.{mainField} = {currTab}.{currId}  ".format(**{
                             'currId': tables[currTab]['primarykey'],
                             'mainField': mainField,
@@ -471,7 +471,7 @@ def filterByLinkedTables(nameTable,links):
                                                         decEL['oper'],
                                                         decEL['right']
                                                     )
-            print('sqlSTACK', sqlSTACK)
+            # print('sqlSTACK', sqlSTACK)
 
         # print('decEL',decEL)
         decompLinks.append(decEL)
@@ -507,7 +507,7 @@ def filterByLinkedTables(nameTable,links):
         'outWhere': outWhere
     })
 
-    # print(outSql)
+    # print('outSql',outSql)
     return outSql
 
 

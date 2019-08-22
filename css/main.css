@@ -631,9 +631,7 @@ div[name='selectrow'] svg{
 }
 /*========================= statusbar ========== */
 
-#btn-gentrans{
-  float: left;
-}
+
 .statusbar{
   height: 28px;
   background: var(--e3_col);

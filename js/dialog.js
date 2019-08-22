@@ -162,10 +162,11 @@ function getSizeElement(element) {
 
             // ============ load preset ==============
             var formName = eventEl.attr('data-path').split('/')[1];
-            var tableName = formName.replace('_list','');
+            // var tableName = formName.replace('_list','');
             var numberPreset = eventEl.attr('data-preset');
             var preset = {
-              links: tableName+".is_deleted = 0",
+              // links: tableName+".is_deleted = 0",
+              links: "is_deleted = 0",
             };
 
 
@@ -265,8 +266,9 @@ function getSizeElement(element) {
               var relEl = eventEl.siblings(this.options.relationship);
               if (relEl.length) {
                 var paramEL = getDataAttributes(eventEl);
-                var tableName = eventEl.attr('data-path').split('/')[1].replace('_list','');
-                var addLink = tableName+".is_deleted = 0";
+                // var tableName = eventEl.attr('data-path').split('/')[1].replace('_list','');
+                // var addLink = tableName+".is_deleted = 0";
+                var addLink = "is_deleted = 0";
                 if (paramEL.links) {
                   if (paramEL.links.search(addLink)==-1) {
                     paramEL.links = paramEL.links+' && '+ addLink;
@@ -392,7 +394,7 @@ function getSizeElement(element) {
               }
               bodyFrameEl.translate();
 
-              console.log(bodyFrameEl.height(),bodyFrameEl.width());
+              // console.log(bodyFrameEl.height(),bodyFrameEl.width());
 
               frame.height(bodyFrameEl.height()+heightCorr);
               frame.width(bodyFrameEl.width()+30);

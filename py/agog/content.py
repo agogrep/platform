@@ -1023,6 +1023,48 @@ class Message:
             return agog.db.dbSql().request(sql)
 
 
+class comDoc:
+    '''autoCompleteDocuments'''
+    def __init__(self):
+        pass
+
+    def manager(self,param):
+        '''! single request protocol only !'''
+        self._line = param.pop('_line')
+        return getattr(self, self._line)(**param)
+
+    def load(self,name,type):
+        stor = agog.serverman.Storage()
+        file = stor.getFileObject(('temp',name),'br')
+        out = {
+            'data': file.read(),
+            'type': type
+        }
+        file.close()
+        os.remove(file.name)
+        return out
+
+    def fill(self,scriptName,arg):
+        curBase = agog.db.GlobVar().get('currentBase')
+        if agog.serverman.Storage().hasPath(('bases',curBase+'/py/completedocs.py')):
+            customModul = importlib.import_module(curBase+'.py.completedocs')
+            if (scriptName in dir(customModul)):
+                scrypt = getattr(customModul, scriptName)
+                stor = agog.serverman.Storage()
+                session = agog.db.Session().currentSession().get('sessionId')
+                fileName = session + scriptName
+                file = stor.getFileObject(('temp',fileName),'bw')
+                data = agog.db.GlobVar().get('inData')
+                file.write(data)
+                file.close()
+                fullFileName = file.name
+                newFillName = scrypt(fullFileName,**arg)
+                os.remove(fullFileName)
+                return {'data': newFillName.encode('utf-8'),
+                        'type':'text/html'}
+
+
+
 
 if __name__ == '__main__':
     pass

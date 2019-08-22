@@ -27,7 +27,7 @@ jQuery.cookie = function(name, value, options) {
             } else {
                 date = options.expires;
             }
-            console.log(date);
+            // console.log(date);
             expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
         }
         /*CAUTION: Needed to parenthesize options.path and options.domain
@@ -291,7 +291,7 @@ jQuery.fn.extend({
           }
         }
         bank.data[id]['changeDiv'].push((target,mutations)=> {
-          console.log('changeDiv',id);
+          // console.log('changeDiv',id);
           customScript(target,mutations);
         });
         function setObserv() {
@@ -655,6 +655,62 @@ function getValElement(el) { // возвращает значение елеме
 
 }());
 
+var Utf8 = {
+    // public method for url encoding
+    encode : function (string) {
+        string = string.replace(/\r\n/g,"\n");
+        var utftext = "";
+        for (var n = 0; n < string.length; n++) {
+            var c = string.charCodeAt(n);
+            if (c < 128) {
+                utftext += String.fromCharCode(c);
+            }
+            else if((c > 127) && (c < 2048)) {
+                utftext += String.fromCharCode((c >> 6) | 192);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+            else {
+                utftext += String.fromCharCode((c >> 12) | 224);
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+        }
+        return utftext;
+    },
+    // public method for url decoding
+    decode : function (utftext) {
+        var string = "";
+        var i = 0;
+        var c = c1 = c2 = 0;
+        while ( i < utftext.length ) {
+            c = utftext.charCodeAt(i);
+            if (c < 128) {
+                string += String.fromCharCode(c);
+                i++;
+            }
+            else if((c > 191) && (c < 224)) {
+                c2 = utftext.charCodeAt(i+1);
+                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                i += 2;
+            }
+            else {
+                c2 = utftext.charCodeAt(i+1);
+                c3 = utftext.charCodeAt(i+2);
+                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                i += 3;
+            }
+        }
+        return string;
+    }
+}
+
+
+function jsonToBase64(obj) {
+  var strParam = JSON.stringify(obj);
+  strParam = Utf8.encode(strParam)
+  return btoa(strParam);
+}
+
 
 
 function hreftoobject(href) {
@@ -684,6 +740,48 @@ function spot_target(selector,level) {
      	out = stack[0];
     }
     return out
+}
+
+
+function autoCompleteDocuments(file,scriptName,arg) {
+  //'''life - object, param'''
+  var xhr = new XMLHttpRequest();
+  var request = {
+    target:{
+      'module':'content',
+      'class': "comDoc",
+    },
+    param:{
+      _line:'fill',
+      scriptName: scriptName,
+      arg: arg
+    }
+  }
+  xhr.open('POST', '/buh/?'+ jsonToBase64(request) , false);
+  xhr.setRequestHeader('Content-Type','application/octet-stream' );
+  xhr.send(file);
+  // console.log('xhr.response',xhr.response);
+  if (xhr.status == 200) {
+    request.param = {
+      _line:'load',
+      name:xhr.response,
+      type:file.type
+    }
+    var url = '/buh/?'+ jsonToBase64(request);
+    var aLinkEL = $('<a>').attr({
+      href: url,
+      type: 'application/octet-stream',
+      download: file.name
+    }).text(file.name);
+    $('body').append(aLinkEL);
+    aLinkEL[0].click();
+    setTimeout(function() {
+        aLinkEL.remove();
+    }, 0);
+  }else{
+    $('<div>').html(xhr.response).windialog({'typedialog':'error'});
+  }
+
 }
 
 

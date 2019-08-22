@@ -64,10 +64,10 @@ if nameBase:
 agog.serverman.iniVar()
 
 # Budget ===============================
-# bill = agog.tools.importModule('billing')
+bill = agog.tools.importModule('billing')
 #
-# idList = [[477,200]]
-# print(bill.Budget().set('realchange',idList))
+idList = [[524,0]]
+print(bill.Budget().set('realchange',idList))
 
 #
 
@@ -76,8 +76,8 @@ agog.serverman.iniVar()
 # links = '( transactions.source@accounts.aid = 1 || transactions.dest@accounts
 # aid = 1 )  && transactions.is_deleted = 0'
 # links = 'events.relid@budgetrules.dest@accounts@users.login = admin '
-links = 'transactions.dest@accounts@users.login <> mama'
-print(agog.sqlgen.filterByLinkedTables('transactions', links))
+# links = 'transactions.dest@accounts@users.login <> mama'
+# print(agog.sqlgen.filterByLinkedTables('transactions', links))
 
 
 # print(agog.serverman.AccessControl().check('fields','users_form.cassa','curr',1,'r'))

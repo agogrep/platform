@@ -21,13 +21,15 @@ sudo apt-get install python-dev libxml2 libxml2-dev libxslt-dev
 
 
 sudo pip3 install mysql-connector-python
-sudo pip3 install hjson 
-sudo pip3 install flock 
-sudo pip3 install python-crontab 
+sudo pip3 install hjson
+sudo pip3 install flock
+sudo pip3 install python-crontab
 sudo pip3 install pathlib
 
 
 sudo pip3 install lxml
+
+sudo pip install docx-mailmerge
 
 sudo sh -c "echo '\numask 002' >> /etc/apache2/envvars"
 sudo sh -c "echo  '\n\n%www-data ALL = NOPASSWD: /etc/init.d/apache2 \n%www-data ALL = NOPASSWD: /sbin/shutdown \n%www-data ALL = NOPASSWD: /bin/chmod' >> /etc/sudoers"
@@ -36,5 +38,5 @@ sudo sh -c "echo  '\n\n%www-data ALL = NOPASSWD: /etc/init.d/apache2 \n%www-data
 
 --------------------------
 sudo nano /etc/mysql/my.conf
-    [mysqld] 
+    [mysqld]
     sql_mode = ''
