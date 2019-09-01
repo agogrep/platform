@@ -455,6 +455,21 @@ String.prototype.hashCode = function() {
         var id_lists = thisForm.find('.form').attrs('id');
         // console.log('thisForm',thisForm);
         var mainMode = thisForm.find('#form').is('[hidden]') ? 'delete' : 'write';
+
+
+        // предварительная очистки selectItems data-choicemode="one"
+        var selItList = thisForm.find('[data-choicemode="one"]');
+        selItList.each((i,el)=>{
+          var selBoxEl = $(el).closest('.selectionbox');
+          var rowList = selBoxEl.find('[hidden="hidden"].row');
+          rowList.each((y,yel)=>{
+            var rowEl = $(yel);
+            rowEl.find('div').text('').attr('data-href','');
+          });
+        });
+
+
+
         id_lists.push('main');
         id_lists.forEach(function(list_id) {
             // console.log('list_id',list_id);

@@ -52,6 +52,8 @@ def converter(original_object, expected_type, default_val ):
             return obj, ''
         elif tp == 'datetime':
             return str(obj), ''
+        elif tp == 'date':
+            return str(obj), ''
         elif tp == 'Decimal':
             return str(obj),''
 

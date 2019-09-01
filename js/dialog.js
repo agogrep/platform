@@ -471,7 +471,7 @@ function getSizeElement(element) {
         jQuery.extend(true, script, window[scriptName]);
         if (!script) {script = {};}
         var mandatoryMethods = [
-          'whenWinOpen','whenEndLoad','whenChanges'
+          'whenWinOpen','whenEndLoad','whenChanges',
         ]
         mandatoryMethods.forEach(function(el,i) {
           if (!(el in script)) {script[el] = function() {}};

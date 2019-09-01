@@ -65,6 +65,7 @@ function getIdFormName(journal) {
             this.options.links = data.links;
           }
         }
+        if (!this.options.sel_fields) {this.options.sel_fields = data.sel_fields ? data.sel_fields : ''}
 
         if (!this.options.useControlPanel) {
           if (data.useControlPanel) { this.options.useControlPanel = true; }
@@ -129,6 +130,10 @@ function getIdFormName(journal) {
     _setOption: function( key, value ) {
       $.Widget.prototype._setOption.apply( this, arguments );
       this._super( "_setOption", key, value );
+      if (key == 'links') {
+        this.options._elControl.find('#links').text(this.options.links);
+      }
+
     },
 
     setCheckRow: function(){
@@ -1311,7 +1316,7 @@ function getIdFormName(journal) {
 
         createScriptLinks: function() {
 
-          console.log('createScriptLinks');
+          // console.log('createScriptLinks');
           var taLinksEl = this.element.find('#links');//this.element.find('#scripts #links');
           var script = '';
 
@@ -1322,6 +1327,7 @@ function getIdFormName(journal) {
           // taLinksEl.val('');
 
           var ruleList = this.element.find('#filterrules .rule');
+          var strRuleList = [];
           ruleList.each((i,el)=> {
               var ruleEl = $(el);
               var errList = ruleEl.find('.errorvalue');
@@ -1357,21 +1363,31 @@ function getIdFormName(journal) {
                     // console.log('check',(ruleEl.find('.checkbox').checkbox('check')))
 
                     if (! ruleEl.find('.checkbox').checkbox('check')) {
-                      strRule = '/*'+strRule+'*/';
+                      strRule = '/*'+strRule.trim()+'*/';
                     }
 
 
 
                     if (this.options.complexLinks) {
-                      script = script.replace(origin,strRule)
+                      strRuleList.push([strRule,origin])
+                      var data = ruleEl.data();
+                      data.origin = strRule;
+                      ruleEl.data(data);
+                      // script = script.replace(origin,strRule)
                     }else{
                       if (script) { script = script+' &&'; };
                       script = script + strRule;
                     }
-
+                    // console.log('script',script);
                   }
               }
           });
+
+          strRuleList.forEach((el,i)=>{
+            script = script = script.replace(el[1],el[0]);
+          });
+          // console.log('strRuleList',strRuleList);
+          // console.log('script',script);
           taLinksEl.val(script);
          this.syncTA('toOriginal','#links');
         },

@@ -58,7 +58,7 @@ class Profile:
     def __init__(self):
         pass
 
-    def manager(self,param):
+    def manager(self, param):
         '''{
         _line: команда,
             data: что то
@@ -747,14 +747,15 @@ class Form:
 
         for part in partxml:
 
+
             content_list = []
             cel_buffer = part.findtext('section/selector')
             tar_buffer =  part.findtext('section/parentselector')
 
             if (cel_buffer is not None) and (tar_buffer is not None):
 
-
                 newrRootHtml = htmlroot.findall(tar_buffer)
+
 
 
                 if len(newrRootHtml) > 0:
@@ -766,6 +767,10 @@ class Form:
 
 
                 if len(pattern_parthtml) > 0:
+
+
+
+
                     txt_pattern = html.tostring(pattern_parthtml[0], encoding ="unicode", method="html")
 
                     try:
@@ -798,6 +803,8 @@ class Form:
                         if query is not None:
                             requestInDatabase = True
 
+
+
                     if requestInDatabase:
                         try:
                             base = agog.db.dbSql()
@@ -823,6 +830,8 @@ class Form:
                     ruleName = self.pattern_name+(('.'+partName) if partName else '')
                     session = agog.db.Session().currentSession()
                     uid = session.get('uid')
+
+
 
                     for _row in rows:
 
@@ -922,7 +931,6 @@ class Form:
                     part_list.append(pr)
 
         if part_page_mode=='part':
-
             return part_list
         else:
             return html.tostring(htmlroot, encoding ="unicode", method="html")

@@ -200,6 +200,7 @@ def journal(**arg):
 
 
 def write(**arg):
+    # print('230 arg === > ',arg)
     # режимы : write, delete
     # если id= 0  создает новую запись, если > - обновляет текущюю
     out = ''
@@ -234,6 +235,9 @@ def write(**arg):
             param.update({'upd':', '.join(upd),
                             'filds':', '.join(filds),
                             'vals':', '.join(vals)})
+
+
+            # print('240 param[id]  ====',param.get('id'))
 
             if line=='write':
                 if param['id']==0:
