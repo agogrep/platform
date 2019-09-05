@@ -1,4 +1,9 @@
+debugRootDir = '/var/www/buh/'
+print('debugRootDir:',debugRootDir)
 print('__main__.py')
+
+
+
 import sys,json, pathlib,importlib,traceback
 import time
 
@@ -13,7 +18,7 @@ if len(sys.argv)>1:
         # cnt = Control()
         # cnt.backupBase()
 if not rootPath:
-    rootPath = pathlib.Path('/var/www/buh/')
+    rootPath = pathlib.Path(debugRootDir)
 
 pyPath = rootPath / 'py'
 basesPath = rootPath / 'bases'
@@ -26,27 +31,30 @@ import agog
 agog.serverman.Storage().ini(rootPath)
 agog.tools.Logger()
 
+if nameBase:
+    if _line == 'backup':
+        agog.db.GlobVar().set('currentBase',nameBase)
+        try:
+            cont = agog.serverman.Control()
+            cont.backupBase(nameBase)
+            cont.backupStructure(nameBase)
+        except Exception as e:
+            agog.tools.customLogger('requests').error( traceback.format_exc( agog.traceLevel ) )
+            raise
+    else:
+        agog.db.GlobVar().set('currentBase',nameBase)
+        try:
+            module = importlib.import_module(nameBase)
+            if _line in dir(module):
+                func = getattr(module, _line)
+                func()
+        except Exception as e:
+            agog.tools.customLogger('requests').error( traceback.format_exc( agog.traceLevel ) )
+            raise
 
-if _line == 'backup':
-    agog.db.GlobVar().set('currentBase',nameBase)
-    try:
-        cont = agog.serverman.Control()
-        cont.backupBase(nameBase)
-        cont.backupStructure(nameBase)
-    except Exception as e:
-        agog.tools.customLogger('requests').error( traceback.format_exc( agog.traceLevel ) )
-        raise
-
-elif _line == 'currentEvents':
-    agog.db.GlobVar().set('currentBase',nameBase)
-    try:
-        module = importlib.import_module(nameBase)
-        if 'currentEvents' in dir(module):
-            func = getattr(module, 'currentEvents')
-            func()
-    except Exception as e:
-        agog.tools.customLogger('requests').error( traceback.format_exc( agog.traceLevel ) )
-        raise
+# else:
+#     if _line:
+#         tools.agog.importModule('tasks')
 
 # ///////////////////////////////////////////////////////////////////////////////////////////////
 # //////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,6 +62,22 @@ elif _line == 'currentEvents':
 
 #
 agog.serverman.iniVar()
+
+# Budget ===============================
+bill = agog.tools.importModule('billing')
+#
+idList = [[524,0]]
+print(bill.Budget().set('realchange',idList))
+
+#
+
+
+
+# links = '( transactions.source@accounts.aid = 1 || transactions.dest@accounts
+# aid = 1 )  && transactions.is_deleted = 0'
+# links = 'events.relid@budgetrules.dest@accounts@users.login = admin '
+# links = 'transactions.dest@accounts@users.login <> mama'
+# print(agog.sqlgen.filterByLinkedTables('transactions', links))
 
 
 # print(agog.serverman.AccessControl().check('fields','users_form.cassa','curr',1,'r'))
@@ -349,24 +373,24 @@ agog.serverman.iniVar()
 #     }
 #
 #
-param = {
-    'client': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0',
-    'path': '/file/html/welcome_page.html',
-    'method': 'GET',
-    # 'data': json.dumps(data).encode('utf-8'),
-    'data':'',
-    'cookie': 'buh=0e1f07935ffc1a5ba9f45923e0c9306a; ml=ru',
-    'type': 'application/json',
-    'ip': '127.0.0.1',
-    'queue': '1559983221157977'
-    }
-#
-#
-#
-#
-#
-w = agog.serverman.Web(param)
-print(w.do())
+# param = {
+#     'client': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0',
+#     'path': '/file/html/welcome_page.html',
+#     'method': 'GET',
+#     # 'data': json.dumps(data).encode('utf-8'),
+#     'data':'',
+#     'cookie': 'buh=0e1f07935ffc1a5ba9f45923e0c9306a; ml=ru',
+#     'type': 'application/json',
+#     'ip': '127.0.0.1',
+#     'queue': '1559983221157977'
+#     }
+# #
+# #
+# #
+# #
+# #
+# w = agog.serverman.Web(param)
+# print(w.do())
 
 
 # ==================== TaskMan =================

@@ -44,8 +44,10 @@ def main(environ, startResponse):
         'queue': '', #environ['mod_wsgi.queue_start'],
         'ip': environ.get('REMOTE_ADDR'),
         'client':  environ.get('HTTP_USER_AGENT'),
+        'query': environ.get('QUERY_STRING')
     }
-
+    # print('query len =======>',len(param.get('query')))
+    # print('param ===================>', param)
     mainlog.debug(param)
 
     out = serverman.Web(param).do()

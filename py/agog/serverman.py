@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import mysql.connector
-import inspect, os, re, time
+import inspect, os, re, time, base64
 import sys, traceback
 import pathlib, importlib, shutil
 import hashlib
@@ -664,7 +664,7 @@ class Control:
 
         cmd = copyStucture.format(**dbini)
 
-        print(cmd)
+        # print(cmd)
         self.execute(cmd)
         path = backPath  / 'initfill.sql'
         stor.setPermission(path)
@@ -1006,7 +1006,7 @@ class Web:
             return None
 
     def fileMeneger(self,pathAsList,domain='main'):
-        print('fileMeneger === ',pathAsList)
+        # print('fileMeneger === ',pathAsList)
 
         '''domain - размещение файлов и обЪектов. : 'main' - основное, <baseName> -  база
         pathAsList - относительный путь'''
@@ -1174,69 +1174,106 @@ class Web:
             return cnfMain.get('demo')
 
     def paramMeneger(self):
+
+        '''
+        multi mode:
+        inData = {
+            <numRequest>:[
+                {
+                    target:{
+                        location:'', default- main
+                        module:'', default- content
+                        class:'', default- текущая function
+                        function:'', default- manager
+                    }
+                    param = {...}
+                }
+            ]
+        }
+        out = {
+            <numRequest>:[
+                {
+                    target = "..."
+                    content = ...
+                }
+            ]
+
+        }
+        -------------------------
+        mono mode:
+        inData = {
+            target:{
+                location:'', default- main
+                module:'', default- content
+                class:'', default- текущая function
+                function:'', default- manager
+            }
+            param = {...}
+        }
+        out = byte
+        type = ?
+        '''
+        # queryObject
+        currentBase = agog.db.GlobVar().get('currentBase')
+        session = agog.db.GlobVar().get('session')
+        reqlog = logging.getLogger(currentBase+'.requests')
+
         def jsondefault(obj):
             if isinstance(obj, Decimal):
                 return float(obj)
             return str(obj)
 
-        if self.input.get('type') == 'application/json':
-            data = self.input.get('data')
-            currentBase = agog.db.GlobVar().get('currentBase')
-            session = agog.db.GlobVar().get('session')
-            reqlog = logging.getLogger(currentBase+'.requests')
-            try:
-                inObjStr = data.decode()
-                inData = json.loads(inObjStr)
-                '''
-                in_data = {
-                    <numRequest>:[
-                        {
-                            target:{
-                                location:'', default- main
-                                module:'', default- content
-                                class:'', default- текущая function
-                                function:'', default- manager
-                            }
-                            param = {...}
-                        }
-                    ]
-                }
+        def proRequest(request):
 
-                out = {
-                    <numRequest>:[
-                        {
-                            target = "..."
-                            content = ...
-                        }
-                    ]
 
-                }
-                '''
+            target = request['target']
+            location = target.get('location','main')
+            module = target.get('module','content')
+            function = target.get('function','manager')
+            path = ''
+            if location == 'main':
+                path = 'agog.'+module
+            if location == 'custom':
+                path = currentBase + '.py.'+ module
+            module = importlib.import_module(path)
+            curFunc = None
+            if target.get('class'):
+                curClass= getattr(module, target.get('class'))
+                curFunc = getattr(curClass(),function)
+            else:
+                curFunc = getattr(module,function)
 
-                reqlog.debug((session,inData))
-                out = {}
-                errorList = []
+
+
+            return curFunc(request['param'])
+
+        # if self.input.get('type') == 'application/json':
+
+        try:
+            # data = self.input.get('data')
+            # if self.input.get('queryObject'):
+            #     inData = self.input.get('queryObject')
+            # else:
+            #     inObjStr = data.decode()
+            #     inData = json.loads(inObjStr)
+
+
+            inData = self.input.get('queryObject');
+            reqlog.debug((session,inData))
+            out = {}
+            errorList = []
+
+            mode = 'multi'
+            if 'target' in inData:
+                mode = 'mono'
+
+
+            if mode == 'multi':
                 for num in inData:
                     partList = []
                     for request in inData[num]:
                         try:
-                            target = request['target']
-                            location = target.get('location','main')
-                            module = target.get('module','content')
-                            function = target.get('function','manager')
-                            path = ''
-                            if location == 'main':
-                                path = 'agog.'+module
-                            if location == 'custom':
-                                path = currentBase + '.py.'+ module
-                            module = importlib.import_module(path)
-                            curFunc = None
-                            if target.get('class'):
-                                curClass= getattr(module, target.get('class'))
-                                curFunc = getattr(curClass(),function)
-                            else:
-                                curFunc = getattr(module,function)
-                            partList.extend(curFunc(request['param']))
+                            partList.extend( proRequest(request) )
                         except Exception as e:
                             err = traceback.format_exc( agog.traceLevel )
                             reqlog.error( err )
@@ -1246,19 +1283,28 @@ class Web:
                             }])
                             partList.extend([{'status': 'ERROR'}])
                             pass
-
                     out[num] = partList
                     if errorList:
                         out['error'] = errorList
-
                 self.out['data'] = json.dumps(out,default=jsondefault).encode('utf-8')
                 self.out['type'] = 'application/json'
                 self.out['status'] = '200 OK'
-            except Exception as e:
-                err = traceback.format_exc( agog.traceLevel )
-                reqlog.error( err )
-                self.out['data'] = self.createErrorPage( err ).encode('utf-8')
-                pass
+
+            elif mode == 'mono':
+                newOut = proRequest( inData )
+                # self.out['data'] =
+                # self.out['type'] = 'text/html'
+                self.out.update(newOut)
+                self.out['status'] = '200 OK'
+
+
+
+        except Exception as e:
+            err = traceback.format_exc( agog.traceLevel )
+            reqlog.error( err )
+            self.out['data'] = self.createErrorPage( err ).encode('utf-8')
+            pass
+
 
 
     def loginGenerator(self):
@@ -1355,7 +1401,7 @@ class Web:
     def do(self):
         path = self.input.get('path')
         if path:
-            print('if path: ---')
+            # print('if path: ---')
             pathAsList = self.pathToList(path)
             if len(pathAsList):
 
@@ -1384,13 +1430,38 @@ class Web:
                                     self.loadAdminPanel(pathAsList[2:])
                         else:
                             if self.input.get('type')=='application/json':
+                                data = self.input.get('data')
+                                inObjStr = data.decode()
+                                self.input['queryObject'] = json.loads(inObjStr)
                                 self.paramMeneger()
                             else:
                                 # currentBase = agog.db.GlobVar().get('currentBase')
                                 # statusError = agog.db.GlobVar().get(currentBase+'.statusError','ramdisk')
                                 # if statusError:
                                 #     raise Exception(statusError)
-                                self.loadDesctop()
+
+                                if self.input.get('query'):
+                                    query = self.input.get('query')
+                                    if agog.tools.isBase64(query):
+
+                                        param = json.loads(base64.b64decode(query).decode())
+                                        self.input['queryObject'] = param
+                                        data = self.input.get('data')
+                                        # if type(data).__name__=='bytes'
+                                        # hash = hashlib.md5(data).hexdigest()
+
+                                        # print('python hash',hash)
+                                        # f = open('/var/www/buh/logs/test.txt','bw')
+                                        # f.write(data)
+                                        # f.close()
+                                        agog.db.GlobVar().set('inData',data)
+                                        self.paramMeneger()
+                                    else:
+                                        self.loadDesctop()
+                                else:
+                                    self.loadDesctop()
+
+
 
                     else:
                         if self.input.get('data'):

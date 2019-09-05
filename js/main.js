@@ -27,7 +27,7 @@ jQuery.cookie = function(name, value, options) {
             } else {
                 date = options.expires;
             }
-            console.log(date);
+            // console.log(date);
             expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
         }
         /*CAUTION: Needed to parenthesize options.path and options.domain
@@ -291,7 +291,7 @@ jQuery.fn.extend({
           }
         }
         bank.data[id]['changeDiv'].push((target,mutations)=> {
-          console.log('changeDiv',id);
+          // console.log('changeDiv',id);
           customScript(target,mutations);
         });
         function setObserv() {
@@ -491,6 +491,11 @@ function getValElement(el) { // возвращает значение елеме
   var regular = []
   var dataStack = {};
   var callStack = {};
+  var synchMode = true;
+
+  function wait() {
+    synchMode = false;
+  }
 
   function setRegular(order,callback) {
   /*
@@ -538,10 +543,12 @@ function getValElement(el) { // возвращает значение елеме
         path = window.location.pathname;
         pthList = path.split('/');
         rightsPath = '/'+pthList[1]+'/';
-        mxhr.open('POST', rightsPath , true);
+        mxhr.open('POST', rightsPath , synchMode);
         mxhr.setRequestHeader('Content-Type', 'application/json');
         mxhr.send(strParam);
-        mxhr.onreadystatechange = function() {
+        // console.log('mxhr.responseText',mxhr.responseText);
+
+        var whenLoad = ()=>{
             if (mxhr.readyState==4){
               var input;
               var error;
@@ -584,14 +591,125 @@ function getValElement(el) { // возвращает значение елеме
               }
           }
         };
+
+        if (synchMode) {
+          mxhr.onreadystatechange = whenLoad;
+        }else{
+          whenLoad();
+          synchMode = true;
+        }
+
+
+
+      //   mxhr.onreadystatechange = function() {
+      //       if (mxhr.readyState==4){
+      //         var input;
+      //         var error;
+      //         try {
+      //           if ($.trim(mxhr.responseText)) {
+      //             input = JSON.parse(mxhr.responseText);
+		  // if(debugMode){console.log('responseText input',input);}
+      //             for (var num in input) {
+      //               if (num == 'error') {
+      //                 for (var i = 0; i < input[num].length; i++) {
+      //                   console.error(input[num][i].request,'\n',input[num][i].log);
+      //                   info = 'The request was made with errors, see the browser logs >>';
+      //                   $('<div>').html(info).windialog({'typedialog':'error'});
+      //                 }
+      //               }else{
+      //                 calls = currCallStack[num];
+      //                 if (typeof(calls)=='object') {
+      //                   for (var i = 0; i < calls.length; i++) {
+      //                     try {
+      //                       calls[i]( input[num] );
+      //                     } catch (e) {
+      //                       console.error(e);
+      //                     }
+      //                   }
+      //                 }
+      //               }
+      //             }
+      //             }
+      //           }
+      //         catch (err) {
+      //           input = mxhr.responseText;
+      //           error = err;
+      //           console.error(error);
+      //           try {
+      //             $('<div>').html(input).windialog({'typedialog':'error'});
+      //           } catch (e) {}
+      //         }
+      //         finally {
+      //           mxhr.abort();
+      //         }
+      //     }
+      //   };
       }
   window.mxhRequest = set;
   window.Request = {
     setRegular: setRegular,
     set: set,
     sendAll: sendAll,
+    wait:wait
   };
+
 }());
+
+var Utf8 = {
+    // public method for url encoding
+    encode : function (string) {
+        string = string.replace(/\r\n/g,"\n");
+        var utftext = "";
+        for (var n = 0; n < string.length; n++) {
+            var c = string.charCodeAt(n);
+            if (c < 128) {
+                utftext += String.fromCharCode(c);
+            }
+            else if((c > 127) && (c < 2048)) {
+                utftext += String.fromCharCode((c >> 6) | 192);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+            else {
+                utftext += String.fromCharCode((c >> 12) | 224);
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+        }
+        return utftext;
+    },
+    // public method for url decoding
+    decode : function (utftext) {
+        var string = "";
+        var i = 0;
+        var c = c1 = c2 = 0;
+        while ( i < utftext.length ) {
+            c = utftext.charCodeAt(i);
+            if (c < 128) {
+                string += String.fromCharCode(c);
+                i++;
+            }
+            else if((c > 191) && (c < 224)) {
+                c2 = utftext.charCodeAt(i+1);
+                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                i += 2;
+            }
+            else {
+                c2 = utftext.charCodeAt(i+1);
+                c3 = utftext.charCodeAt(i+2);
+                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                i += 3;
+            }
+        }
+        return string;
+    }
+}
+
+
+function jsonToBase64(obj) {
+  var strParam = JSON.stringify(obj);
+  strParam = Utf8.encode(strParam)
+  return btoa(strParam);
+}
 
 
 
@@ -622,6 +740,48 @@ function spot_target(selector,level) {
      	out = stack[0];
     }
     return out
+}
+
+
+function autoCompleteDocuments(file,scriptName,arg) {
+  //'''life - object, param'''
+  var xhr = new XMLHttpRequest();
+  var request = {
+    target:{
+      'module':'content',
+      'class': "comDoc",
+    },
+    param:{
+      _line:'fill',
+      scriptName: scriptName,
+      arg: arg
+    }
+  }
+  xhr.open('POST', '/buh/?'+ jsonToBase64(request) , false);
+  xhr.setRequestHeader('Content-Type','application/octet-stream' );
+  xhr.send(file);
+  // console.log('xhr.response',xhr.response);
+  if (xhr.status == 200) {
+    request.param = {
+      _line:'load',
+      name:xhr.response,
+      type:file.type
+    }
+    var url = '/buh/?'+ jsonToBase64(request);
+    var aLinkEL = $('<a>').attr({
+      href: url,
+      type: 'application/octet-stream',
+      download: file.name
+    }).text(file.name);
+    $('body').append(aLinkEL);
+    aLinkEL[0].click();
+    setTimeout(function() {
+        aLinkEL.remove();
+    }, 0);
+  }else{
+    $('<div>').html(xhr.response).windialog({'typedialog':'error'});
+  }
+
 }
 
 

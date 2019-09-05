@@ -269,6 +269,14 @@ body{
   display: block;
 }
 
+#filterset .rule .checkbox{
+   float: left;
+   margin-left: 2px;
+   margin-right: 5px;
+   margin-top: 7px;
+}
+
+
 /* ======================================== presetbox ========================== */
 
 
@@ -623,9 +631,7 @@ div[name='selectrow'] svg{
 }
 /*========================= statusbar ========== */
 
-#btn-gentrans{
-  float: left;
-}
+
 .statusbar{
   height: 28px;
   background: var(--e3_col);
@@ -849,7 +855,7 @@ label {
   border:1px solid var(--e1_col);
   min-height: 26px;
   margin: 2px;
-  /* max-width: 394px; */
+  max-width: 394px;
 }
 
 .deleted{

@@ -58,7 +58,7 @@ class Profile:
     def __init__(self):
         pass
 
-    def manager(self,param):
+    def manager(self, param):
         '''{
         _line: команда,
             data: что то
@@ -747,25 +747,30 @@ class Form:
 
         for part in partxml:
 
+
             content_list = []
             cel_buffer = part.findtext('section/selector')
             tar_buffer =  part.findtext('section/parentselector')
 
             if (cel_buffer is not None) and (tar_buffer is not None):
-               
 
                 newrRootHtml = htmlroot.findall(tar_buffer)
-                
-               
+
+
+
                 if len(newrRootHtml) > 0:
                     pattern_parthtml = newrRootHtml[0].findall(cel_buffer)
                 else:
                     pattern_parthtml = []
 
-                
-                
+
+
 
                 if len(pattern_parthtml) > 0:
+
+
+
+
                     txt_pattern = html.tostring(pattern_parthtml[0], encoding ="unicode", method="html")
 
                     try:
@@ -798,6 +803,8 @@ class Form:
                         if query is not None:
                             requestInDatabase = True
 
+
+
                     if requestInDatabase:
                         try:
                             base = agog.db.dbSql()
@@ -823,6 +830,8 @@ class Form:
                     ruleName = self.pattern_name+(('.'+partName) if partName else '')
                     session = agog.db.Session().currentSession()
                     uid = session.get('uid')
+
+
 
                     for _row in rows:
 
@@ -852,9 +861,14 @@ class Form:
                             attr_el = el.findtext('attribute')
                             fild_el = el.findtext('fild')
 
-                            curEl = parthtml.findall(cel_el)[0]
 
-                            if cel_el is not None:
+                            # print('parthtml.findall(cel_el)[0]',cel_el,parthtml.findall(cel_el))
+
+                            curElList = parthtml.findall(cel_el)
+                            if len(curElList):
+                                curEl = curElList[0]
+
+                            if (cel_el is not None) and (len(curElList)):
                                 if (fild_el is not None) and (fild_el!=''):
                                     if fild_el in row:
                                         row_val = row[fild_el]
@@ -917,7 +931,6 @@ class Form:
                     part_list.append(pr)
 
         if part_page_mode=='part':
-
             return part_list
         else:
             return html.tostring(htmlroot, encoding ="unicode", method="html")
@@ -1016,6 +1029,48 @@ class Message:
             sql = sql.replace('"templateForDate"', '(NOW() - INTERVAL 5 MINUTE)')
 
             return agog.db.dbSql().request(sql)
+
+
+class comDoc:
+    '''autoCompleteDocuments'''
+    def __init__(self):
+        pass
+
+    def manager(self,param):
+        '''! single request protocol only !'''
+        self._line = param.pop('_line')
+        return getattr(self, self._line)(**param)
+
+    def load(self,name,type):
+        stor = agog.serverman.Storage()
+        file = stor.getFileObject(('temp',name),'br')
+        out = {
+            'data': file.read(),
+            'type': type
+        }
+        file.close()
+        os.remove(file.name)
+        return out
+
+    def fill(self,scriptName,arg):
+        curBase = agog.db.GlobVar().get('currentBase')
+        if agog.serverman.Storage().hasPath(('bases',curBase+'/py/completedocs.py')):
+            customModul = importlib.import_module(curBase+'.py.completedocs')
+            if (scriptName in dir(customModul)):
+                scrypt = getattr(customModul, scriptName)
+                stor = agog.serverman.Storage()
+                session = agog.db.Session().currentSession().get('sessionId')
+                fileName = session + scriptName
+                file = stor.getFileObject(('temp',fileName),'bw')
+                data = agog.db.GlobVar().get('inData')
+                file.write(data)
+                file.close()
+                fullFileName = file.name
+                newFillName = scrypt(fullFileName,**arg)
+                os.remove(fullFileName)
+                return {'data': newFillName.encode('utf-8'),
+                        'type':'text/html'}
+
 
 
 

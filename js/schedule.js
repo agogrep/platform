@@ -21,6 +21,7 @@ function strToObject(str) {
   $.widget( "elementsControl.schedule", {
     options: {
       relclass: '',
+      hash:'',
       timing : {
           years:  [],
           months: [],
@@ -130,9 +131,7 @@ function strToObject(str) {
             this.addDayMonths();
         }
       });
-      // scheduleEl.find("#bt-generete").click(()=>{
-      //   this.apply();
-      // });
+      // scheduleEl.find("#bt-generete").click(()=>{ this.apply(); });
       var eventsEl = this.element.find('#events');
       eventsEl.journal(this.options.JourOptions);
 
@@ -160,7 +159,11 @@ function strToObject(str) {
       eventsEl.append(moreEl);
       this.element.wintabs();
       this._iniClick(this.element.find('#months .value-box, #days .value-box'));
-      scheduleEl.changeDetect('set');
+      // scheduleEl.changeDetect('set');
+
+      ///=======================
+      this.options.hash = this.options.formElement.find('[name=schedule]').val().hashCode();
+      // console.log('create',this.options.hash);
     },
 
     _setOption: function( key, value ) {
@@ -194,11 +197,27 @@ function strToObject(str) {
         var eventJourEl = this.element.find('#events');
 
         var thisEl = this.element;
-        formElement.find('[name=schedule]').val(objectToStr(schParam));
+        var scriptEl = formElement.find('[name=schedule]');
+        scriptEl.val(objectToStr(schParam));
         var timing = this.options.timing;
+
+        // -------------------------------------------
+        // -------------------------------------------
+        // scheduleEl.changeDetect();
+        // console.log('turn',scheduleEl.hasClass('turn'));
+        // scheduleEl.changeDetect('set');
+
+        var turn = (scriptEl.val().hashCode() != this.options.hash) ? true : false;
+        // console.log('turn',turn);
+
+
+
+
+
         function whenSevedForm() {
           scheduleEl.changeDetect();
-          if (scheduleEl.hasClass('turn')) {
+          // if (scheduleEl.hasClass('turn')) {
+          if (turn) {
             if (formElement.form('option','status')=='DONE') {
               schParam._line = 'set';
               schParam.relclass = thisEl.schedule('option','relclass');
@@ -212,7 +231,8 @@ function strToObject(str) {
                   // try {
                     thisEl.wintabs('option','active',1);
                     eventJourEl.journal('applyFilter',1);
-                    scheduleEl.changeDetect('set');
+                    // scheduleEl.changeDetect('set');
+                    thisEl.schedule('option','hash',scriptEl.val().hashCode());
                   // } catch (e) { }
 
                 }

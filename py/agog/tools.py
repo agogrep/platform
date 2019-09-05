@@ -1,5 +1,5 @@
 from datetime import datetime
-import time
+import time, re
 import pprint
 import os, shutil, sys, traceback
 import ast
@@ -11,6 +11,9 @@ import importlib
 
 agog  = sys.modules[__package__]
 
+def isBase64(string):
+    reg = r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$'
+    return True if re.search(reg,string) else False
 
 def importModule(name):
     '''помогает импортировать модуль для custom'''
@@ -48,6 +51,8 @@ def converter(original_object, expected_type, default_val ):
         if tp == 'str':
             return obj, ''
         elif tp == 'datetime':
+            return str(obj), ''
+        elif tp == 'date':
             return str(obj), ''
         elif tp == 'Decimal':
             return str(obj),''

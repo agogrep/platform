@@ -4,5 +4,4 @@ logs/*
 !logs/.gitkeep
 RAM/*
 !RAM/.gitkeep
-
-/test
+py/agog/__pycache__/*

@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <div class="target form" id ='main'>
+      <div class="main formsection" id='form' >
+        <div id='sysmessage'></div>
+
+        <div class ="formtabs">
+          <ul>
+            <li><a href="#tabs-1">tabs-1</a></li>
+            <li><a href="#tabs-2">tabs-2</a></li>
+            <li><a href="#tabs-3">tabs-3</a></li>
+          </ul>
+          <div id="tabs-1"></div>
+          <div id="tabs-2"></div>
+          <div id="tabs-3"></div>
+        </div>
+
+        <div class="delimiter"></div>
+
+        <div name="_id_" class="main master autolabel infofield">{_id_}</div>
+
+        <input name="_text_" class="main  autolabel" value="">
+
+        <select name="_select_" class = 'main combobox autolabel' data-enumerations = '_name_'  value=""></select>
+
+        <input name="_date_" class = 'main datetimebox  autolabel' type="text" data-mode= "dateTime" value="">
+
+        <div name="_check_" class = 'main checkbox autolabel' value=""></div>
+
+        <div class = 'selectionbox' style="max-width: 394px;">
+          <div class = 'dialog button-select'
+                  data-typedialog = 'selectItems'
+                  data-choicemode = '_multi_/_one_'
+                  data-masterfield = '_id_'
+                  data-path = '/_name_list/'
+                  data-countrows =  8
+                  data-relationship = '#_realname_'>
+           <svg><use xlink:href="/file/ico/sprite.svg#three-point"></use></svg>
+           </div>
+         <div class = 'selectionbox-label flup'>_name_</div>
+         <div id = '_realname_' class='form / selectionvalue'>
+            <div class='_realname_ row formsection' name = 'row'>
+               <div class = '_realname_ hidfeild' name="_field1_">{_field1_}</div>
+               <div class = '_realname_ dialog ' data-typedialog = 'form' data-href='/_name_form/?_field2_={_field2_}' name="_field2_">{_field2_}</div>
+               <div class = '_realname_' data-asname = '' name="_field3_">{_field3_}</div>
+            </div>
+        </div>
+       </div>
+       </div>
+     </div>
+   </body>
+</html>
