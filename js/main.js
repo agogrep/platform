@@ -770,7 +770,7 @@ function autoCompleteDocuments(file,scriptName,arg) {
       name:xhr.response,
       type:file.type
     }
-    var url = '/buh/?'+ jsonToBase64(request);
+    var url = rightsPath+'?'+ jsonToBase64(request);
     var aLinkEL = $('<a>').attr({
       href: url,
       type: 'application/octet-stream',
