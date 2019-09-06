@@ -37,7 +37,7 @@ if nameBase:
         try:
             cont = agog.serverman.Control()
             cont.backupBase(nameBase)
-            cont.backupStructure(nameBase)
+            # cont.backupStructure(nameBase)
         except Exception as e:
             agog.tools.customLogger('requests').error( traceback.format_exc( agog.traceLevel ) )
             raise

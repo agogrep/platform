@@ -261,7 +261,7 @@ String.prototype.hashCode = function() {
         var data =   this.element.find("#formsavebox").preset('option','data');
         var contEl = $('<div>');
         contEl.loadСontent(this.options.initialData);
-        console.log('initialData',this.options.initialData);
+        // console.log('initialData',this.options.initialData);
         var newFormEl = contEl.find('#form');
         var formEl = this.element.find('#form');
         formEl.replaceWith(newFormEl);

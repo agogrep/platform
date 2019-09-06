@@ -722,6 +722,7 @@ class Control:
 
             agog.tools.emptyFolder( str(tempPath) )
 
+        self.backupStructure(nameBase)
 
 
     def restoreBase(self,namefile,fromStorage):

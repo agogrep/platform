@@ -2,7 +2,7 @@
 
 // ==== функции общего назначения ==========================
 
-var debugMode = true;
+var debugMode = false;
 
 jQuery.cookie = function(name, value, options) {
     /*
@@ -757,7 +757,10 @@ function autoCompleteDocuments(file,scriptName,arg) {
       arg: arg
     }
   }
-  xhr.open('POST', '/buh/?'+ jsonToBase64(request) , false);
+  var path = window.location.pathname;
+  var pthList = path.split('/');
+  var rightsPath = '/'+pthList[1]+'/';
+  xhr.open('POST', rightsPath+'?'+ jsonToBase64(request) , false);
   xhr.setRequestHeader('Content-Type','application/octet-stream' );
   xhr.send(file);
   // console.log('xhr.response',xhr.response);
