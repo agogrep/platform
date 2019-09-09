@@ -207,25 +207,39 @@ function strToObject(str) {
         // console.log('turn',scheduleEl.hasClass('turn'));
         // scheduleEl.changeDetect('set');
 
-        var turn = (scriptEl.val().hashCode() != this.options.hash) ? true : false;
+        // var turn = (scriptEl.val().hashCode() != this.options.hash) ? true : false;
         // console.log('turn',turn);
-
+        var turn = (scriptEl.val().hashCode() != thisEl.schedule('option','hash')) ? true : false;
 
 
 
 
         function whenSevedForm() {
+
+
           scheduleEl.changeDetect();
+
+
+
           // if (scheduleEl.hasClass('turn')) {
           if (turn) {
+
+
             if (formElement.form('option','status')=='DONE') {
+
               schParam._line = 'set';
               schParam.relclass = thisEl.schedule('option','relclass');
               schParam.relid = formElement.form('option','id');
               schParam.priority = 0;
+
+
+
               eventJourEl.journal('option','links',
               'relclass = '+thisEl.schedule('option','relclass')+
               ' && relid = '+formElement.form('option','id'));
+
+
+
               var call = [
                 function() {
                   // try {
@@ -248,6 +262,7 @@ function strToObject(str) {
                 }
               ];
               mxhRequest(out,call);
+              // console.log('mxhRequest(out,call)');
             }
           }
 

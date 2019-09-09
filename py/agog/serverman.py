@@ -1540,9 +1540,10 @@ class Event:
         return day
 
 
-    def dateGen(self,param):
+    def dateGen(self,param,predate = False):
         '''
-        JSON:
+        predate - True/False
+        param - JSON:
         {
             dateRange : ['',''],
             years: [list]
@@ -1556,6 +1557,12 @@ class Event:
         months = param['months']
         days = param['days']
         dateList = []
+
+
+        if predate:
+            primDate = startdate - timedelta(days=1)
+            dateList.append(primDate)
+
         for y in years:
             if (y >= startdate.year) and (y <= enddate.year):
                 for m in months:
@@ -1575,8 +1582,10 @@ class Event:
                             else:
                                 day = d
 
-                        if (startdate < datetime(y, m, day)) and (enddate >= datetime(y, m, day)):
-                            dateList.append(datetime(y, m, day))
+                        currDate = datetime(y, m, day)
+
+                        if (startdate <= currDate) and (enddate >= currDate):
+                            dateList.append(currDate)
         return dateList
 
 
@@ -1590,7 +1599,8 @@ class Event:
             dateList = param.get('datelist')
             values = ''
             if dateList is None:
-                dateList = self.dateGen(param)
+                predate = (relclass == 'reportperiods')
+                dateList = self.dateGen(param, predate)
             for i, el in enumerate(dateList,1):
                 values += '("{0}",{1},"{2}",{3})'.format(relclass,relid,el,priority)
                 if i < len(dateList):

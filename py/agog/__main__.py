@@ -64,15 +64,23 @@ if nameBase:
 agog.serverman.iniVar()
 
 # Budget ===============================
-bill = agog.tools.importModule('billing')
+# bill = agog.tools.importModule('billing')
 #
-idList = [[524,0]]
-print(bill.Budget().set('realchange',idList))
+# idList = [[524,0]]
+# print(bill.Budget().set('realchange',idList))
 
 #
 
+# EVENTS ================================
 
-
+ev = agog.serverman.Event()
+param = {
+        'dateRange' : ['2019-08-15','2019-12-30'],
+        'years': [2019],
+        'months': [8,9,10,11,12],
+        'days': [13],
+}
+print(ev.dateGen(param,False))
 # links = '( transactions.source@accounts.aid = 1 || transactions.dest@accounts
 # aid = 1 )  && transactions.is_deleted = 0'
 # links = 'events.relid@budgetrules.dest@accounts@users.login = admin '

@@ -131,7 +131,10 @@ function getIdFormName(journal) {
       $.Widget.prototype._setOption.apply( this, arguments );
       this._super( "_setOption", key, value );
       if (key == 'links') {
-        this.options._elControl.find('#links').text(this.options.links);
+        if (this.options._elControl) {
+            this.options._elControl.find('#links').text(this.options.links);
+        }
+
       }
 
     },
