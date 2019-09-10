@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <script>
-    <masterfield>_masterfield_</masterfield>
+    <masterfield>gnid</masterfield>
     <part>
       <name>main</name>
       <section>
@@ -9,22 +9,26 @@
         <repeat>0</repeat>
       </section>
       <sql>
-        <readquery>_SQL_</readquery>
+        <readquery>SELECT * FROM genres WHERE gnid = {gnid}</readquery>
         <writequery>
         </writequery>
         <writegenerator>
           <scriptname>write</scriptname>
           <param>
-            <table>_tablename_</table>
-            <id_name>_masterfield_</id_name>
+            <table>genres</table>
+            <id_name>gnid</id_name>
           </param>
         </writegenerator>
         <argument>
-          <_namefield_><type>int/str</type><long></long><default></default></_namefield_>
+          <gnid><type>int</type><long></long><default></default></gnid>
+          <gname><type>str</type><long></long><default></default></gname>
+          <descr><type>str</type><long></long><default></default></descr>
         </argument>
       </sql>
       <layout>
-        <element><selector>.//*[@name="_namefield_"]</selector><attribute>value</attribute><fild>_namefield_</fild></element>
+        <element><selector>.//*[@name="gnid"]</selector><attribute></attribute><fild>gnid</fild></element>
+        <element><selector>.//*[@name="gname"]</selector><attribute>value</attribute><fild>gname</fild></element>
+        <element><selector>.//*[@name="descr"]</selector><attribute>value</attribute><fild>descr</fild></element>
       </layout>
     </part>
     <part></part>

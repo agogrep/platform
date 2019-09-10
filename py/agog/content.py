@@ -190,7 +190,8 @@ class ReportGen:
         # print('out',out)
         param = { 'scriptName': 'loadToServiceDate' }
         customuot = self.getReport(param)
-        out.update( customuot)
+        if customuot:
+            out.update( customuot)
         return out
 
 
