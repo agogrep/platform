@@ -261,6 +261,7 @@ def write(**arg):
 
 
 def filterByLinkedTables(nameTable,links):
+    print('===================== def filterByLinkedTables(nameTable,links) ===================== ')
     ## подключение внешних источников
     tables = agog.db.ConformDataBase().get('tables')
     fields = agog.db.ConformDataBase().get('fields')
@@ -398,9 +399,23 @@ def filterByLinkedTables(nameTable,links):
                         decEL['inner'] = ''
                         decEL['where'] = '{0}.{1} NOT IN {2}'.format( mainTab ,mainField, leftWhere )
                     else:
-                        decEL['inner'] = linkInnerPartSQL.format(**param).strip() + str(indX)
-                        relationField = tables[mainTab]['primarykey']
-                        decEL['where'] = '{0}.{1} = {2}.{3}'.format( transTable + str(indX) ,relationField ,mainTab ,relationField)
+
+                        # new version
+                        leftWhere = linkExceptPartSQL.format(**{
+                        'field' : tables[mainTab]['primarykey'],
+                        'mainTable': mainTab,
+                        'inner': linkInnerPartSQL.format(**param),
+                        })
+                        decEL['inner'] = ''
+                        decEL['where'] = '{0}.{1} IN {2}'.format( mainTab ,mainField, leftWhere )
+
+                        # old version
+                        # decEL['inner'] = linkInnerPartSQL.format(**param).strip() + str(indX)
+                        # relationField = tables[mainTab]['primarykey']
+                        # decEL['where'] = '{0}.{1} = {2}.{3}'.format( transTable + str(indX) ,relationField ,mainTab ,relationField)
+
+
+
                 lastTable = param.get('table')
 
             else:
@@ -428,11 +443,17 @@ def filterByLinkedTables(nameTable,links):
                                 decEL['where'] = '{0}.{1} NOT IN {2}'.format( mainTab ,mainField, re.sub(r'\b\w+$','',sqlSTACK) )
                             else:
                                 # field = tables[lastTable]['primarykey']
-                                where = '{0}.{1} = {2}.{3}'.format( mainTab  ,mainField ,currTab + str(indX) , tables[currTab]['primarykey'] )
-                                sqlSTACK = 'INNER JOIN {0} '.format( sqlSTACK.strip() + str(indX))
-                                decEL['inner'] = sqlSTACK
-                                decEL['where'] = where
-                        # print('decEL===============',decEL)
+
+                                # new version
+                                decEL['inner'] = ''
+                                decEL['where'] = '{0}.{1} IN {2}'.format( mainTab ,mainField, re.sub(r'\b\w+$','',sqlSTACK) )
+
+                                # old version
+                                # where = '{0}.{1} = {2}.{3}'.format( mainTab  ,mainField ,currTab + str(indX) , tables[currTab]['primarykey'] )
+                                # sqlSTACK = 'INNER JOIN {0} '.format( sqlSTACK.strip() + str(indX))
+                                # decEL['inner'] = sqlSTACK
+                                # decEL['where'] = where
+
                     else:
                         param = {
                             'field': tables[mainTab]['primarykey'],
@@ -511,7 +532,7 @@ def filterByLinkedTables(nameTable,links):
         'outWhere': outWhere
     })
 
-    # print('outSql',outSql)
+    print('outSql ================= ',outSql),
     return outSql
 
 

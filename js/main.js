@@ -399,7 +399,7 @@ function genScriptSearch(table) {
     if (script!='') {
       script = script + ' OR';
     }
-    if (fields[el].type == 'datetime') {
+    if ((fields[el].type == 'datetime') || (fields[el].type == 'date')  ) {
       curEl = 'CAST('+el+' AS CHAR)';
     }
 

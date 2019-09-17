@@ -83,12 +83,13 @@ function getIdFormName(journal) {
 
         // console.log('CPAttr.path',this.options.CPAttr.path);
 
-
         if (!this.options.search) {
-          if (this.options.table) {
-            this.options.search = genScriptSearch(this.options.table);
-          }
+            if (this.options.table) {
+              this.options.search = genScriptSearch(this.options.table);
+            }
         }
+
+
 
         if (this.options.useCheckRow) {this.setCheckRow();}
 
@@ -426,24 +427,39 @@ function getIdFormName(journal) {
 
       var word = this.options._elControl ?  getValElement(this.options._elControl.find('.cp-in-search')) : '';
 
+
+
+
+
+      if( this.options.links.search('[WORD]') != -1) {
+        delete opList[2]; // отключаем search
+      }
+
       opList.forEach((el)=>{
-        var newFilter = this.options[el].replace(/\[WORD\]/g,word);
+
         if (el == 'search') {
+
           if (this.options._elControl) {
             // var word = getValElement(this.options._elControl.find('.cp-in-search'));
             if (word) {
               // var ss = this.options['search'].replace(/\[WORD\]/g,word);
               // if (this.options[el]) {filterRequest[el] = ss;}
-              if (this.options[el]) {filterRequest[el] = newFilter;}
+              if (this.options[el]) {filterRequest[el] = this.options[el].replace(/\[WORD\]/g,word)}
             }
           }
 
         }else if (el == 'order') {
           if (out.request.size) {
             // if (this.options[el]) {filterRequest[el] = this.options[el];}
-            if (this.options[el]) {filterRequest[el] = newFilter;}
+            if (this.options[el]) {filterRequest[el] = this.options[el];}
           }
         }else{
+          var newFilter = this.options[el];
+          if(!word){
+            newFilter = newFilter.replace(/[a-zA-Z1-9\.@]+\s+\S+(\s|\s%)\[WORD\](\S|\s)/g,'')
+          }
+          newFilter = newFilter.replace(/\[WORD\]/g,word)
+
           if (this.options[el]) {filterRequest[el] = newFilter;}
         }
       });

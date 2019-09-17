@@ -206,7 +206,7 @@ function getSizeElement(element) {
             var data = hreftoobject(eventEl.attr('data-href'));
             data.request.countrows = preset.countrows;
 
-            data.request.filter = {links: preset.links};
+            data.request.filter = {links: preset.links.replace(/[a-zA-Z1-9\.@]+\s+\S+(\s|\s%)\[WORD\](\S|\s)/g,'')};
 
 
             if (preset.order) {data.request.filter.order = preset.order};
