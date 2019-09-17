@@ -272,15 +272,17 @@ class ServiceData:
         pass
 
     def patterns(self):
-        repStor = agog.serverman.Storage().changePath(('pattern','reports'))
-        fileNameList = os.listdir( str(repStor) )
         patterns = {
             'reports':{}
         }
+        repStor = agog.serverman.Storage().changePath(('pattern','reports'))
+        if repStor:
+            fileNameList = os.listdir( str(repStor) )
 
-        for fname in fileNameList:
-            htmlFile = agog.tools.htmlStrip(html.parse( str(repStor / fname) ))
-            patterns['reports'][fname.replace('.html','')] = html.tostring(htmlFile, encoding ="unicode", method="html")
+
+            for fname in fileNameList:
+                htmlFile = agog.tools.htmlStrip(html.parse( str(repStor / fname) ))
+                patterns['reports'][fname.replace('.html','')] = html.tostring(htmlFile, encoding ="unicode", method="html")
 
         return patterns
 
