@@ -63,6 +63,9 @@ if nameBase:
 #
 agog.serverman.iniVar()
 
+print( agog.tools.isBase64('demo') )
+
+
 # Budget ===============================
 # bill = agog.tools.importModule('billing')
 #
@@ -73,14 +76,14 @@ agog.serverman.iniVar()
 
 # EVENTS ================================
 
-ev = agog.serverman.Event()
-param = {
-        'dateRange' : ['2019-08-15','2019-12-30'],
-        'years': [2019],
-        'months': [8,9,10,11,12],
-        'days': [13],
-}
-print(ev.dateGen(param,False))
+# ev = agog.serverman.Event()
+# param = {
+#         'dateRange' : ['2019-08-15','2019-12-30'],
+#         'years': [2019],
+#         'months': [8,9,10,11,12],
+#         'days': [13],
+# }
+# print(ev.dateGen(param,False))
 # links = '( transactions.source@accounts.aid = 1 || transactions.dest@accounts
 # aid = 1 )  && transactions.is_deleted = 0'
 # links = 'events.relid@budgetrules.dest@accounts@users.login = admin '

@@ -12,8 +12,13 @@ import importlib
 agog  = sys.modules[__package__]
 
 def isBase64(string):
-    reg = r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$'
-    return True if re.search(reg,string) else False
+
+    if len(string)>20:
+        reg = r'^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$'
+        return True if re.search(reg,string) else False
+    else:
+        return False
+
 
 def importModule(name):
     '''помогает импортировать модуль для custom'''

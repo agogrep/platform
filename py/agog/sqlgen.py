@@ -261,7 +261,7 @@ def write(**arg):
 
 
 def filterByLinkedTables(nameTable,links):
-    print('===================== def filterByLinkedTables(nameTable,links) ===================== ')
+    # print('===================== def filterByLinkedTables(nameTable,links) ===================== ')
     ## подключение внешних источников
     tables = agog.db.ConformDataBase().get('tables')
     fields = agog.db.ConformDataBase().get('fields')
@@ -532,7 +532,7 @@ def filterByLinkedTables(nameTable,links):
         'outWhere': outWhere
     })
 
-    print('outSql ================= ',outSql),
+    # print('outSql ================= ',outSql),
     return outSql
 
 
