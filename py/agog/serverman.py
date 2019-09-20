@@ -13,6 +13,7 @@ import mimetypes
 import calendar
 from lxml import html
 from decimal import Decimal
+from email.mime.text import MIMEText
 
 from datetime import datetime,timedelta, date
 import pprint
@@ -24,12 +25,19 @@ from crontab import CronSlices, CronTab
 agog  = sys.modules[__package__]
 
 def sendmail(message):
+    nameBase = agog.db.GlobVar().get('currentBase')
+    serverName = os.uname().nodename
     try:
         mailini = agog.db.Config().get('mail')
         smtpObj = smtplib.SMTP( mailini.get('smtp') , 587)
         smtpObj.starttls()
         smtpObj.login( mailini.get('login') , mailini.get('password') )
-        smtpObj.sendmail( mailini.get('login') , mailini.get('sendto') ,message)
+        title = 'SERVER {0}, BASE {1}.'.format(serverName,nameBase)
+        msg = MIMEText(message)
+        msg['Subject'] = title
+        msg['From'] = mailini.get('login')
+        msg['To'] = mailini.get('sendto')
+        smtpObj.sendmail( mailini.get('login') , mailini.get('sendto') ,msg.as_string())
         smtpObj.quit()
     except Exception as e:
         reqLog = agog.tools.customLogger('requests')
@@ -594,17 +602,18 @@ class Control:
         quota = int(conf.get('quota'))
 
         if amount > quota:
-            sendmail('Backup has increased quota. '+str(amount)+' byte')
+            # sendmail('Backup has increased quota. '+str(amount)+' byte')
             return True
 
 
 
     def getAllFile(self):
-        try:
-            ftpList = self.getFtpFileList()
-        except Exception as e:
-            ftpList = []
-            agog.tools.customLogger('requests').error(e)
+        ftpList = []
+        if self.backupConfig.get('default')=='ftp':
+            try:
+                ftpList = self.getFtpFileList()
+            except Exception as e:
+                agog.tools.customLogger('requests').error(e)
         localList = self.getLocalFileList()
 
         out = {
@@ -617,12 +626,15 @@ class Control:
         tree = os.walk( str(self.localPath) )
         fileList = []
         out = []
+        nameBase = agog.db.GlobVar().get('currentBase')
+        test = r'^'+nameBase+r'_\S+.sql.gz$'
         for i in tree:
             fileList = i[2]
 
         for name in fileList:
-            size = os.stat( str( self.localPath / name ) ).st_size
-            out.append([name,size])
+            if( len(re.findall(test,name)) ):
+                size = os.stat( str( self.localPath / name ) ).st_size
+                out.append([name,size])
         return out
 
 
@@ -780,11 +792,18 @@ class Control:
 
 
     def deleteCopies(self,call,fileList,storage):
+
+        # for el in fileList:
+        #     print('from fileList',el)
+
+
+
         fileList.reverse()
         backConf = self.backupConfig.get(storage)
         mincop = int(backConf.get('mincopies'))
         minday = timedelta(days=int(backConf.get('minday')))
         currDate = datetime.now()
+
         def checkDate(namefile):
             datefile = datetime.strptime( namefile.split('_')[1] ,"%Y-%m-%d")
             dalta = currDate - datefile
@@ -794,8 +813,14 @@ class Control:
         for el in fileList:
             i += 1
             if i > mincop:
-                if checkDate(el[0]): # удалаяет только если файл старше чем указанное число дней
-                    call(el[0])
+                # _\d{4}-\d{2}-\d{2}_
+                namefile = el[0]
+                if (len(re.findall(r'_\d{4}-\d{2}-\d{2}_',namefile))):
+
+                    # print('namefile',namefile)
+
+                    if checkDate(namefile): # удалаяет только если файл старше чем указанное число дней
+                        call(el[0])
 
 
 

@@ -63,7 +63,7 @@ if nameBase:
 #
 agog.serverman.iniVar()
 
-print( agog.tools.isBase64('demo') )
+agog.serverman.Control().backupBase('buh')
 
 
 # Budget ===============================

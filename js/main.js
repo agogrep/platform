@@ -973,7 +973,7 @@ function nameToComplexName(name,app) {
           param:{
             _line:'get',
             _stampupdate: stampupdate,// stump(),
-            links: 'mdest = u'+uid+' && mdest = ALL',//++' && mdest = g1'
+            links: '(mdest = u'+uid+' || mdest = ALL)',//++' && mdest = g1'
           }
         }
       ];
