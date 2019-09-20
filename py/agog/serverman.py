@@ -602,7 +602,7 @@ class Control:
         quota = int(conf.get('quota'))
 
         if amount > quota:
-            # sendmail('Backup has increased quota. '+str(amount)+' byte')
+            sendmail('Backup has increased quota. '+str(amount)+' byte')
             return True
 
 
@@ -633,8 +633,12 @@ class Control:
 
         for name in fileList:
             if( len(re.findall(test,name)) ):
-                size = os.stat( str( self.localPath / name ) ).st_size
-                out.append([name,size])
+                stat = os.stat( str( self.localPath / name ) )
+                out.append([name, stat.st_size, stat.st_mtime])
+
+        def keySort(el):
+            return el[2]
+        out.sort(key=keySort)
         return out
 
 
@@ -644,10 +648,21 @@ class Control:
             ftp = self.ftpconnect()
             fileList = []
             def add(el):
+                dtStamp = 0
+                dateList = re.findall(r'\d{4}.\d{2}.\d{2}_\d{2}.\d{2}.\d{2}.\d{6}',el)
+                if len(dateList):
+                    datetime_object = datetime.strptime(dateList[0], '%Y-%m-%d_%H.%M.%S.%f')
+                    dtStamp = datetime_object.timestamp()
+
                 thisEl = el.split(None)
-                fileList.append( [ thisEl[-1].lstrip() , int(thisEl[-5]) ] )
+
+                fileList.append( [ thisEl[-1].lstrip() , int(thisEl[-5]), dtStamp ] )
             ftp.retrlines("LIST",add)
             ftp.quit()
+
+            def keySort(el):
+                return el[2]
+            fileList.sort(key=keySort)
 
             return fileList
         except Exception as e:
@@ -788,16 +803,7 @@ class Control:
         self.deleteCopies(call,fileList,'local')
 
 
-
-
-
     def deleteCopies(self,call,fileList,storage):
-
-        # for el in fileList:
-        #     print('from fileList',el)
-
-
-
         fileList.reverse()
         backConf = self.backupConfig.get(storage)
         mincop = int(backConf.get('mincopies'))
@@ -813,12 +819,8 @@ class Control:
         for el in fileList:
             i += 1
             if i > mincop:
-                # _\d{4}-\d{2}-\d{2}_
                 namefile = el[0]
                 if (len(re.findall(r'_\d{4}-\d{2}-\d{2}_',namefile))):
-
-                    # print('namefile',namefile)
-
                     if checkDate(namefile): # удалаяет только если файл старше чем указанное число дней
                         call(el[0])
 
@@ -1688,12 +1690,12 @@ class Event:
         self.base.conn.commit()
 
 
-def iniVar(): # инициализация  для запуска в режиме отладки
+def iniVar(baseName,login,uid): # инициализация  для запуска в режиме отладки
     globalVar = agog.db.GlobVar()
-    globalVar.set('session',{'uid':'1',
-                            'login':'admin'
+    globalVar.set('session',{'uid':str(uid),
+                            'login':login
                             })
-    globalVar.set('currentBase','buh')
+    globalVar.set('currentBase',baseName)
 
 
 if __name__ == '__main__':

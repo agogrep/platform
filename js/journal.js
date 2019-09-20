@@ -110,11 +110,16 @@ function getIdFormName(journal) {
         this.setSizeColumns();
         // console.log('2 wJur width',this.options.table,this.element.find('#titles').width());
         if (this.options.useControlPanel) {this.setControlPanel();}
+
         this.setSizeCP();
+
       var blockWidth = this.element.outerWidth();
       new ResizeSensor(this.element.parent()[0], ()=> {
           if (blockWidth != this.element.outerWidth()) {
-            this.setSizeCP();
+            if (this.element.outerWidth()) {
+              this.setSizeCP();
+            }
+
           }
       });
       this.moveColum();
@@ -709,10 +714,6 @@ function getIdFormName(journal) {
         // var mount = mountAllColumn();
 
         var wJur = this.element.find('#titles').width();
-
-
-
-
 //============
         var exceptList = ['selectrow'];
         if (this.options.CPAttr.masterfield) {
@@ -780,6 +781,7 @@ function getIdFormName(journal) {
       if (this.options.useControlPanel) {
         var elControl = this.options._elControl;
         var currval = this.element.width();
+
         if (currval) {
           elControl.outerWidth(currval);
         }
@@ -790,6 +792,7 @@ function getIdFormName(journal) {
         }
         var sizeButPan = c;
         var search_width = currval - sizeButPan - elControl.find('div#apply').outerWidth(true)-15 ;
+
         if(search_width > 160){
           elControl.find('.cp-in-search').outerWidth(search_width);
           elControl.height(30);

@@ -98,14 +98,49 @@ jQuery.fn.extend({
 
     resizeDiv: function(customScript) {
       var thisEl = $(this);
+
+      // version 1
+
       var blockWidth = thisEl.outerWidth();
       var blockHeight = thisEl.outerHeight();
+
+
+
+      // version 2
+
+      function sizeStr(tEl) {
+        var sizeNameList = [ 'clientHeight','clientLeft','clientTop','clientWidth','offsetHeight','offsetLeft','offsetTop',
+          'offsetWidth','scrollHeight','scrollLeft','scrollTop','scrollWidth']
+        var sList = [];
+          sizeNameList.forEach((el,i)=>{
+            sList.push( tEl[el] )
+          });
+        return sList.join(',')
+      }
+
+      var block = sizeStr(this);
+
       new ResizeSensor(thisEl[0], ()=> {
-          if ((blockWidth!=thisEl.outerWidth())||(blockHeight!=thisEl.outerHeight())) {
+
+
+        // // version 1
+        //   var width =  thisEl.outerWidth();
+        //   var height = thisEl.outerHeight();
+        //
+        //   if (( blockWidth != width )||( blockHeight != height )) {
+        //     customScript();
+        //   }
+        //   blockWidth = width;
+        //   blockHeight = height;
+
+          // version 2
+          var currSizeStr = sizeStr( thisEl[0] )
+
+          if (currSizeStr != block) {
             customScript();
           }
-          blockWidth = thisEl.outerWidth();
-          blockHeight = thisEl.outerHeight();
+          block = currSizeStr;
+
       });
     },
 

@@ -61,9 +61,17 @@ if nameBase:
 # //////////////////////////////////////////////////////////////////////////////////////////////
 
 #
-agog.serverman.iniVar()
+agog.serverman.iniVar('buh','admin',1)
 
-agog.serverman.Control().backupBase('buh')
+cont = agog.serverman.Control()
+fileList = cont.getFtpFileList()
+for el in fileList:
+    print(el)
+# cont.copyControlLocal(fileList)
+# print('copyControlLocal ========================')
+# fileList = cont.getLocalFileList()
+# for el in fileList:
+#     print(el)
 
 
 # Budget ===============================

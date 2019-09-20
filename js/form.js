@@ -874,8 +874,11 @@ String.prototype.hashCode = function() {
           },
 
           tabsResize:function () {
+            // console.log('tabsResize ============');
 
             var doNotReduce = !(this.element.hasClass('allow-reduction'));
+
+            // console.log('doNotReduce',doNotReduce);
 
 
             var actTb = this.element.children('[aria-hidden="false"]');
@@ -887,23 +890,30 @@ String.prototype.hashCode = function() {
             var data = tabsEl.data();
 
             if (!(data.width > actTb.width())) {
+              // console.log('if (!(data.width > actTb.width())) {');
               data.width = actTb.width();
             }else{
               if (data.width&&doNotReduce) {
+                // console.log('if (data.width&&doNotReduce) {');
                 actTb.width(data.width);
 
               }
             }
             if (!(data.height > actTb.height())) {
+              // console.log('if (!(data.height > actTb.height())) {  ');
+
               data.height = actTb.height();
             }else{
-              if (data.height&&doNotReduce) {
+              if (data.height && doNotReduce) {
+                // console.log('if (data.height && doNotReduce) {');
+
                 actTb.height(data.height);
               }
             }
             tabsEl.data(data);
 
             if (!doNotReduce) {
+              // console.log('if (!doNotReduce) {');
               this.element.children('.ui-tabs-panel').not('[aria-hidden="false"]').css({
                 width:'auto',
                 height:'auto'
