@@ -538,7 +538,9 @@ class Control:
         self.localPath  = loc.get('path')
         if not self.localPath :
             self.localPath  = self.backupPath / 'data'
-
+        tempDir = self.backupPath / 'temp'
+        if not tempDir.exists():
+            tempDir.mkdir(parents=True)
 
         self.useftp = True
 

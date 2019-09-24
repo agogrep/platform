@@ -61,12 +61,10 @@ if nameBase:
 # //////////////////////////////////////////////////////////////////////////////////////////////
 
 #
-agog.serverman.iniVar('buh','admin',1)
+# agog.serverman.iniVar('library','admin',1)
 
-cont = agog.serverman.Control()
-fileList = cont.getFtpFileList()
-for el in fileList:
-    print(el)
+# cont = agog.serverman.Control()
+
 # cont.copyControlLocal(fileList)
 # print('copyControlLocal ========================')
 # fileList = cont.getLocalFileList()
