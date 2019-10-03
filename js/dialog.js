@@ -57,7 +57,10 @@ function getSizeElement(element) {
   				for (var key in hrefOf.request) {
   					if (hrefOf.request.hasOwnProperty(key)) {
   						if (hrefOf.request[key]) {
-  							val = key+' '+hrefOf.request[key];
+  							// val = key+' '+hrefOf.request[key];
+                if (hrefOf.request[key]!='0') {
+                  val = ' '+hrefOf.request[key];
+                }
   						}
   					}
   				}
