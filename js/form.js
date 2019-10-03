@@ -179,18 +179,30 @@ String.prototype.hashCode = function() {
             thisEl.find("#allowchange,#delete,#apply").remove();
             thisEl.form('option','_lastButtonPressed','delete');
           });
+
+
+          // console.log('load getHash',thisEl.form('getHash'));
         }];
         this.sent(data,call);
       },
       sent:function(data,call) {
           var thisEl = this.element;
+          // call.push(()=>{console.log('sent 193 getHash',thisEl.form('getHash'));});
           call.push(this.options.call);
+
+
+          thisEl.form('getHash',true);
+
+
+          call.push(()=>{ try {thisEl.form('getHash',true);} catch (e) {}});
+
           call.push(function () {
             thisEl.change(function(el) {
               $(this).find('.formsection').each(function (i,el) {$(el).changeDetect();})
             })
             thisEl.changeDetect('set');
             thisEl.find('.formsection').each(function (i,el) {$(el).changeDetect('set');})
+            // console.log('sent 199 getHash',thisEl.form('getHash'));
           });
 
           call.push(function () {
@@ -199,7 +211,7 @@ String.prototype.hashCode = function() {
                 thisEl.form('iniPreset');
               }
             } catch (e) {}
-
+            // console.log('sent 207 getHash',thisEl.form('getHash'));
           });
           // трансформация в новы протокол ==============
           var outData = data;
@@ -218,6 +230,7 @@ String.prototype.hashCode = function() {
 
       change: function () { // проверка изменений в форме. возвращает boolean
         var hash = this.getHash();
+        // console.log('hash',hash,'lastHash',this.options.lastHash);
         if (this.options.lastHash!=hash) {
           return true;
         }else{
@@ -370,7 +383,7 @@ String.prototype.hashCode = function() {
       lockForm:function(status) {
         let list = this.element.find('input, textaria, .button-select, .checkbox, .combobox,#ok,#apply,#delete,#generator');
         let mf = this.options.masterfield;
-        let id = Number(getValElement(this.element.find('[name='+mf+']')));
+        let id = Number(getValElement(this.element.find('[name='+mf+'].main ')));
         if (id) {
           if (status) {
             list.addClass('disabled');
@@ -383,7 +396,6 @@ String.prototype.hashCode = function() {
           this.element.find('#allowchange').addClass('disabled');
         }
       },
-
       removeLocks:function() {
           if (this.options.lcode) {
           var  out =  [
@@ -404,6 +416,7 @@ String.prototype.hashCode = function() {
         },
 
       allowChange:function () {
+          // console.log('allowChange getHash',this.getHash());
           let lcode = String(Math.random());
           call = [(input)=>{
             input.forEach((el)=>{
@@ -431,6 +444,7 @@ String.prototype.hashCode = function() {
                 mess.closest('.ui-dialog').offset({top:offset.top+40,left:offset.left+40});
               }
             });
+
           }];
 
         var out =  [

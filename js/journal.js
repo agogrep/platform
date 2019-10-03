@@ -17,7 +17,7 @@ function getIdFormName(journal) {
       sizeColumns:{}, // хранит размеры колонок
       clear: null,
       // fieldWords:fieldWords,// словарь названий полей
-
+      cacheLen:null,
       fastSearch:true,
       useCorrectColumns:true,
       useColumnSizeMemory:true,
@@ -393,17 +393,21 @@ function getIdFormName(journal) {
 
       if (!this.options.fastSearch){
         out.request.size = size;
+        out.request.cache_len = this.options.cacheLen;
         out.request.mode = 'cache';
         call.push(
             function (input) {
+              var cache_len = null;
               for (var i = 0; i < input.length; i++) {
                 if (input[i]['cache_len']) {
+                  cache_len = input[i]['cache_len'];
               // range: колличество частей (страниц), доступных в кеше
                   range = (input[i]['cache_len']/input[i]['countrows']>>0)+1;
                 }
               }
               var el = $(elJournal);
               var nav = el.journal('cacheNav',size,range,mf_val);
+              el.journal('option','cacheLen',cache_len);
               elJournal.prepend(nav);
               elJournal.append(nav.clone());
               elJournal.find('.cachnav .link-page')
@@ -995,7 +999,7 @@ function getIdFormName(journal) {
                 btn_ok.click(function() {
                   thisEl.selectItems('result');
                 })
-                btn_cancel.find('#cancel').click(function() {
+                btn_cancel.click(function() {
 
                   thisEl.selectItems('destroy');
                   thisEl.remove();

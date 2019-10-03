@@ -7,9 +7,11 @@ import sys, traceback
 import pathlib
 import hashlib
 import pprint
-import ctypes, os
+import ctypes, os, re
 import pickle
 import json, hjson
+import itertools
+import glob
 
 import logging
 
@@ -349,6 +351,9 @@ class Session:
 
 
     def delete(self,sessionId):
+        login = GlobVar().get('session').get('login')
+        Cache().deleteTemp(login) # удаляем мусор сессии
+
         sql  = 'DELETE FROM temp_cookie WHERE cookie = "{0}"'
         db = dbSql();
         sql = sql.format(sessionId)
@@ -389,6 +394,8 @@ class Session:
                     sql  = 'INSERT INTO temp_cookie (cookie,login) VALUES ("{cookie}","{login}")'
                     db = dbSql();
                     db.request(sql.format(cookie=sessionId,login=param['login']),'w')
+
+                Cache().deleteTemp(param['login']) # удаляем мусор прошлых сессий
                 return sessionId
             except Exception as e:
                 raise
@@ -470,27 +477,40 @@ class Cache(object):  # рудимент
     def stamp(self):
         self.lastTimeStamp = datetime.now()
 
-    def set(self,user,label,data):              # set cache search request
-        if user in self.usersCache:
-            self.usersCache[user][label] = data
-        else:
-            self.usersCache[user] = {label:data}
-        self.lastRequestTime  = datetime.now()
+    def set(self,user,label,target,data):              # set cache search request
+
+        stor = agog.serverman.Storage()
+        path = 'temp/{0}_{1}.temp'.format(user,label)
+        file = stor.getFileObject(('profiles',path),'w',encoding='utf-8')
+
+        file.write(target+'\n')
+        if type(data).__name__=='list':
+            for line in data:
+                line = re.sub(r'[\n|\Z]','',line)
+                file.write(line+'\n')
+
 
     def get(self,user,label,range):             # get cache search request
         ''' user - str, label - str, range - list  '''
-        time = self.lastRequestTime.timestamp() - self.lastChangeTime.timestamp()
+        stor = agog.serverman.Storage()
 
-        if time >= 0:
-            if user in self.usersCache:
-                if label in self.usersCache[user]:
-                    dt = self.usersCache[user][label]
-                    out = {'target':dt['target'],
-                            'content':dt['content'][slice(*range)],
-                            'cache_len':len(dt['content'])}
-                    return out
-        else:
-            self.usersCache = {}
+        path = 'temp/{0}_{1}.temp'.format(user,label)
+        file = stor.getFileObject(('profiles',path),'r',encoding='utf-8')
+
+        if file:
+            terget = re.sub(r'\n','',file.readline())
+            # file.seek(0)
+            out = list([  re.sub(r'\n','',line) for line in  itertools.islice(file, *range)] )
+            return [terget, out]
+
+    def deleteTemp(self,userName):
+        stor = agog.serverman.Storage()
+        pach = stor.changePath(('profiles','temp'))
+        if pach:
+            masc = str(pach / userName)+'*'
+            fileList = glob.glob(masc)
+            for file in fileList:
+                os.remove(file)
 
 
 class UserConfig:
@@ -640,33 +660,33 @@ class dbMan:
 
     def start(self):
         varName = self.nameBase+'.statusError'
-        glob = GlobVar()
+        globVar = GlobVar()
         self.mainlog.info('>>> start database '+ self.nameBase)
         stat, mess = self.status()
         errMessage = 'Error: '+str(stat)+' '+mess
         if stat == 1:
             self.mainlog.info(mess)
-            glob.delete(varName,'ramdisk')
+            globVar.delete(varName,'ramdisk')
             return True
         elif stat in (2003,1045,1146,3001,3002):
             self.mainlog.error(errMessage)
-            glob.set(varName,errMessage,'ramdisk')
+            globVar.set(varName,errMessage,'ramdisk')
             return False
         elif stat == 1049:
             self.mainlog.error(errMessage)
             try:
                 self.mainlog.info('attempt to create a base')
                 self.create(self.nameBase)
-                glob.delete(varName,'ramdisk')
+                globVar.delete(varName,'ramdisk')
                 return True
             except Exception as e:
                 self.mainlog.error('failed to create database')
                 err = traceback.format_exc( agog.traceLevel)
                 self.mainlog.error(err)
-                glob.set(varName,errMessage +"\n"+ err,'ramdisk')
+                globVar.set(varName,errMessage +"\n"+ err,'ramdisk')
                 return False
         else:
-            glob.set(varName,errMessage,'ramdisk')
+            globVar.set(varName,errMessage,'ramdisk')
             self.mainlog.error(errMessage)
             return False
 

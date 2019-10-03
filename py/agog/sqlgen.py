@@ -74,6 +74,7 @@ def journal(**arg):
     id_name:    <str>,
     id:         <int>,
     countrows:  <int>,
+    mode: <str> (cache),
     sel_fields: <sql: name1,name2,name3 ...  >,
 
     filter: {
@@ -162,7 +163,7 @@ def journal(**arg):
         sizeTable = int(rows[0]['count(*)'])
         out =''
 
-        if hasSearch:
+        if hasSearch or (arg.get('mode')=='cache'):
             partWhere  = 'WHERE '+ arg['filter']['search'] if 'search' in arg['filter'] else ''
             partOrder = 'ORDER BY  '+ arg['filter']['order'] if 'order' in arg['filter'] else ''
             param['partWhere'] = partWhere

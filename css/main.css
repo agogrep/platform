@@ -1,4 +1,16 @@
 /* icon management  */
+.br-no-support{
+  text-align: center;
+  padding: 10px;
+  color: #ff000080;
+  margin: 10px;
+}
+
+
+
+
+
+
 body{
   height: 100%;
 }
@@ -175,7 +187,7 @@ body{
 .cachnav{
   margin: 3px 0 3px 0 ;
 }
-#chk_fast{
+#button-panel #chk_fast.checkbox {
   float: left;
   margin: 8px 7px 8px 4px;
 }
@@ -345,12 +357,14 @@ border: 1px solid black;
 
 
 /*======================= Элементы формы ====================*/
-#form textarea{
-  width: 231px;
-  margin-bottom: 2px;
-  margin-top: 5px;
-}
+#form textarea {
+    width: 225px;
+    margin-bottom: 2px;
+    margin-top: 5px;
+    padding: 2px;
+    margin-right: 2px;
 
+}
 
 
 

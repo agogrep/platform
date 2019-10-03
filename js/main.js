@@ -4,6 +4,62 @@
 
 var debugMode = false;
 
+var supporVersions = {
+  'Firefox':[63],
+  'Chrome':[71],
+  'Opera':[57]
+}
+
+function getBrowser() {
+    var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+    if(/trident/i.test(M[1])){
+        tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
+        return {name:'IE',version:(tem[1]||'')};
+        }
+    if(M[1]==='Chrome'){
+        tem=ua.match(/(\bOPR|Edge)\/(\d+)/)
+        if(tem!=null)   {return {name:'Opera', version:tem[2]};}
+        }
+    M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+    if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+
+    return {
+      name: M[0],
+      version: M[1]
+    };
+ }
+
+ function browserSupportCheck() {
+   var currBr =  getBrowser();
+   console.info('Current browser '+currBr.name+ '/'+currBr.version);
+   if (supporVersions[ currBr.name ]) {
+     if ( supporVersions[ currBr.name ][0]<= Number(currBr.version) ) {
+       return true
+     }
+   }
+   return false
+ }
+
+
+function checkBrowser() {
+  if (!browserSupportCheck()) {
+    var box = $('<div>');
+    box.addClass('br-no-support');
+    var mess = 'Sorry. Your browser is not supported. Some functions may not work correctly. '+
+                'Recommended browsers: ';
+    for (var br in supporVersions) {
+      mess = mess+ br+'/'+String(supporVersions[br][0])+'+,  ';
+    }
+    box.append(mess);
+    $('body').append(box);
+    alert(mess);
+  }
+}
+
+
+
+
+
 jQuery.cookie = function(name, value, options) {
     /*
     если есть только name - возвращант  значение сокета
@@ -1256,16 +1312,14 @@ function ifClosedPage(e) {
 //=================================  Start system ================================
 
 function start() {
+  checkBrowser();
   $('#desktop').desktop();
   serviceData.load().then(()=>{
     $('body').ini();
     $('#login_name').text(serviceData.currentUser.login);
     MessagesService.start();
     iniSettingsPanel();
-
-
-    try { customScript(); } catch (e) {console.error(e);}
-
+    try { customScript(); } catch (e) { if (debugMode) { console.error(e);} }
   });
 }
 

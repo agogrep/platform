@@ -317,6 +317,12 @@ class Storage(object):
             if default:
                 pathList.append(self.ROOTPATH / 'bases' / currentBase / 'profiles' / 'default' / rolePath[len(rolePath)-1])
 
+
+
+        elif (rolePath[0] == 'profiles'):
+            currentBase = globalVar.get('currentBase')
+            pathList.append(self.ROOTPATH /  'bases' / currentBase/ 'profiles' / rolePath[len(rolePath)-1]  )
+
         elif (rolePath[0] == 'backup'):
             currentBase = globalVar.get('currentBase')
             pathList.append(self.ROOTPATH / 'bases' / currentBase /  'backup' / rolePath[len(rolePath)-1] )
@@ -396,9 +402,10 @@ class Storage(object):
         pathList = self.resolve(path)
         return self.rightPath(pathList)
 
-    def getFileObject(self,path,mode):
+    def getFileObject(self,path,mode,encoding=None):
         '''mode: w,r,bw,br'''
         pathList = self.resolve(path,False)
+
         if len(pathList):
             realPath = pathList[0]
             if not self.AEH(realPath.parent.exists,realPath,None):
@@ -408,11 +415,11 @@ class Storage(object):
                 else:
                     return None
             if mode.find('w')>-1:
-                return self.AEH(open,str(realPath),mode)
+                return self.AEH(open,str(realPath),mode,encoding=encoding)
                 # return open(,mode)
             elif mode.find('r')>-1:
                 if realPath.exists():
-                    return open(str(realPath),mode)
+                    return open(str(realPath),mode,encoding=encoding)
 
 
 class FormsAccessControl:
@@ -1183,6 +1190,8 @@ class Web:
                         self.mainlog.info(info)
                         agog.tools.customLogger('requests').info(info)
                         self.loadDesctop()
+
+                        
                     else:
                         self.loadLoginPage('error')
                 else:

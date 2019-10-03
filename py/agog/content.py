@@ -369,7 +369,7 @@ class ServiceData:
             for line in usedword:
                 if line:
                     wlist = line.split(';')
-                    dictWords[wlist[0]] = wlist[1:]
+                    dictWords[wlist[0].strip()] = wlist[1:]
         except Exception as e:
             reqLog = agog.tools.customLogger('requests')
             reqLog.error( traceback.format_exc( agog.traceLevel ) )
@@ -433,6 +433,7 @@ class Form:
             return [answer]
 
         elif mode == 'cache':
+            request['mode'] = 'cache'
             return self.search(request)
         elif mode == 'getpreset':
             return self.getPreset(request)
@@ -702,18 +703,22 @@ class Form:
         start = (size * countrows)-countrows
         finish = start + countrows
         sli = [start,finish]
-        param_str = json.dumps(param)
+        param_str = json.dumps(param.get('filter'))
         hsh = hashlib.md5(param_str.encode('utf-8')).hexdigest()
         cache = agog.db.Cache()
-        res_cache = None# cache.get(user,hsh,sli)
-
-        if res_cache is not None:
-            res_cache['countrows'] = countrows
-            return [res_cache]
+        res_cache = cache.get(user,hsh,sli)
+        if (res_cache is not None) and (param.get('cache_len') is not None) and (size > 1):
+            out = {
+                'target': res_cache[0],
+                'content': res_cache[1], ##[slice(*sli)]
+                'cache_len':param.get('cache_len'),
+                'countrows': countrows
+            }
+            return [out]
         else:
             res_coll = self.collector(param)
             if len(res_coll):
-                cache.set(user,hsh,res_coll[0])
+                cache.set(user,hsh,res_coll[0]['target'],res_coll[0]['content'])
                 data = {
                     'target':res_coll[0]['target'],
                     'content': res_coll[0]['content'][slice(*sli)], ##[slice(*sli)]

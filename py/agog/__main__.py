@@ -61,7 +61,10 @@ if nameBase:
 # //////////////////////////////////////////////////////////////////////////////////////////////
 
 #
-# agog.serverman.iniVar('library','admin',1)
+agog.serverman.iniVar('library','admin',1)
+
+agog.db.Cache().deleteTemp('admin')
+
 
 # cont = agog.serverman.Control()
 
