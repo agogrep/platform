@@ -1191,7 +1191,7 @@ class Web:
                         agog.tools.customLogger('requests').info(info)
                         self.loadDesctop()
 
-                        
+
                     else:
                         self.loadLoginPage('error')
                 else:
@@ -1370,6 +1370,9 @@ class Web:
                     self.out['data'] = out.encode('utf-8')
                     self.out['status'] = '200 OK'
                     self.out['type'] ='application/x-www-form-urlencoded'
+                info = '''DEMO MODE. created new login {0}; client: {1}, ip: {2}'''.format(newLogin,self.input.get('client'),self.input.get('ip'))
+                # self.mainlog.info(info)
+                agog.tools.customLogger('requests').info(info)
         except Exception as e:
             err = traceback.format_exc( agog.traceLevel )
             self.mainlog.error( err )
