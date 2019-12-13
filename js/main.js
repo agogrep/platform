@@ -934,9 +934,17 @@ var serviceData = {
 
       if(debugMode){console.log(data);}
     },
+    checkSession:function() {
+      var currentBase = location.pathname.split('/')[1];
+      var currSessionId = $.cookie(currentBase);
+      if (this.currentUser.sessionId == currSessionId) {
+        return true
+      }
+      return false
+    },
     load:function(part='all') {
       var currentBase = location.pathname.split('/')[1];
-      if (!this.checkСache()) {
+      if ((!this.checkСache())||(!this.checkSession()) ) {
         var prom = new Promise((resolve)=>{
           var language = window.navigator ? (window.navigator.language ||
                     window.navigator.systemLanguage ||
